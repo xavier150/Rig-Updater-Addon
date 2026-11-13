@@ -1,5 +1,11 @@
 # Rig-Updater-Addon
-A Blender addon to update animations and scene with a new rig version. Initialy created for MMVS game dev.
+
+A Blender addon that updates animation actions and mesh skin weights for a new
+rig version, helping maintain compatibility with older rigs.
+
+> **Note:** The migration rules are currently hardcoded for rigs developed for
+> the [MMVS video game](https://github.com/xavier150/MMVS). They are not yet
+> configurable for other rigs.
 
 In the 3D View sidebar, open **Rig Updater > Actions**:
 
