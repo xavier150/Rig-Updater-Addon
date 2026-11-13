@@ -1,0 +1,4 @@
+# Force LF for source and project files
+*.py text eol=lf
+*.md text eol=lf
+*.json text eol=lf
