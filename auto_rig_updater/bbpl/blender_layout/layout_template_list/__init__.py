@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023-2025 Xavier Loux (BleuRaven)
+# SPDX-FileCopyrightText: Xavier Loux (BleuRaven)
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -10,10 +10,22 @@
 import bpy
 import importlib
 from . import utils
+from . import item_types
+from . import category_types
+from . import list_types
+from . import operators
 from . import types
 
 if "utils" in locals():
     importlib.reload(utils)
+if "item_types" in locals():
+    importlib.reload(item_types)
+if "category_types" in locals():
+    importlib.reload(category_types)
+if "list_types" in locals():
+    importlib.reload(list_types)
+if "operators" in locals():
+    importlib.reload(operators)
 if "types" in locals():
     importlib.reload(types)
 

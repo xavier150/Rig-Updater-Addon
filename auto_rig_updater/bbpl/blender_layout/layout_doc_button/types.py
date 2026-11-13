@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023-2025 Xavier Loux (BleuRaven)
+# SPDX-FileCopyrightText: Xavier Loux (BleuRaven)
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -33,7 +33,7 @@ class CustomOpenTargetWebPage_Operator(bpy.types.Operator):
             return {'CANCELLED'}
 
 def create_doc_operator_class():
-    # Create an custom class ussing addon name for avoid name collision.
+    # Create a custom class using addon name to avoid name collision.
     CustomOpenTargetWebPage_Operator.__name__ = utils.get_open_target_web_page_class_name()
     return CustomOpenTargetWebPage_Operator
 

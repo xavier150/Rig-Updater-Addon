@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023-2025 Xavier Loux (BleuRaven)
+# SPDX-FileCopyrightText: Xavier Loux (BleuRaven)
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -13,7 +13,7 @@ import bpy
 
 def get_use_local_view():
     """
-    Check if the user use local view in an area
+    Check if the user uses local view in an area
     """
     context = bpy.context
     screen = context.screen

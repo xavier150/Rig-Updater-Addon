@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2023-2025 Xavier Loux (BleuRaven)
+# SPDX-FileCopyrightText: Xavier Loux (BleuRaven)
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
 
@@ -86,7 +86,7 @@ def get_layout_accordion_class():
     return BBPL_UI_Accordion_CUSTOM_CLASS
 
 def create_layout_accordion_class():
-    # Create an custom class ussing addon name for avoid name collision.
+    # Create a custom class using addon name to avoid name collision.
     CustomAccordionUI_PropertyGroup.__name__ = utils.get_class_name()
     return CustomAccordionUI_PropertyGroup
 
