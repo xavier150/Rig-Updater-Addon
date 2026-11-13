@@ -1,5 +1,6 @@
 # Project Details
 tests
+generated_builds
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

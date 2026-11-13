@@ -1,0 +1,40 @@
+{
+    "schema_version": [1,0,0],
+    "blender_manifest": {
+        "id": "auto_rig_updater",
+        "version": [0,0,1],
+        "name": "Auto Rig Updater",
+        "tagline": "Auto updater for scene and animations using a new rig version",
+        "maintainer": "Loux Xavier (BleuRaven) xavierloux.loux@gmail.com",
+
+        "website_url": "https://BleuRaven.fr",
+        "report_issue_url": "https://BleuRaven.fr",
+        "support": "COMMUNITY",
+
+        "type": "add-on",
+        "tags": ["Rigging", "Animation", "Pipeline"],
+        "category": "Import-Export",
+        "license": ["SPDX:MIT"],
+        
+        "copyright": [
+            "2026 Xavier Loux",
+            "2013 Blender Foundation"
+        ],
+                
+        "permissions": {
+            "clipboard": "Access to the system clipboard for copy and paste operations"
+        }
+    },
+    "builds": {
+        "blender_for_mmvs": 
+        {
+            "generate_method": "EXTENTION_COMMAND",
+            "auto_install_range": [[5,3,0], "LATEST"],
+            "naming": "{Name}-{Version}.zip",
+            "module": "blender_for_mmvs", 
+            "pkg_id": "blender_for_mmvs", 
+            "exclude_paths": [],
+            "blender_version_min": [5,3,0]
+        }
+    }
+}
