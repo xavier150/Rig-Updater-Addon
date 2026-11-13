@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026-2026 Xavier Loux (BleuRaven)
 #
-# SPDX-License-Identifier: GPL-3.0-or-later
+# SPDX-License-Identifier: SPDX:MIT
 
 # ----------------------------------------------
 #  Rig Updater
@@ -12,12 +12,24 @@ try:
     import importlib
     from . import bpl
     from . import bbpl
+    from . import config
+    from . import rua_action
+    from . import rua_skin
+    from . import rua_ui
 
     import importlib
     if "bpl" in locals():
         importlib.reload(bpl)
     if "bbpl" in locals():
         importlib.reload(bbpl)
+    if "config" in locals():
+        importlib.reload(config)
+    if "rua_action" in locals():
+        importlib.reload(rua_action)
+    if "rua_skin" in locals():
+        importlib.reload(rua_skin)
+    if "rua_ui" in locals():
+        importlib.reload(rua_ui)
 
     bl_info = {}
 
@@ -33,6 +45,7 @@ try:
                 bpy.utils.register_class(cls)
 
             bbpl.register()
+            rua_ui.register()
 
         except Exception as _:
             import traceback
@@ -47,6 +60,7 @@ try:
             for cls in reversed(classes):
                 bpy.utils.unregister_class(cls)
 
+            rua_ui.unregister()
             bbpl.unregister()
 
         except Exception as _:
@@ -63,5 +77,4 @@ except Exception as _:
     print("\033[91m" + "---------------------------------" + "\033[0m")
     traceback.print_exc()
     print("\033[91m" + "---------------------------------" + "\033[0m")
-
 
