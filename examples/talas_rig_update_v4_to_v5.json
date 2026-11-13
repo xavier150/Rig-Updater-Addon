@@ -1,0 +1,1222 @@
+{
+  "update_tasks": [
+    {
+      "title": "Talas rig update from v4 to v5",
+      "armature_filter": {
+        "mode": "name_starts_with",
+        "context": "Talas_Character"
+      },
+      "action_filter": {
+        "mode": "all_in_scene",
+        "context": "",
+        "include_linked_actions": false
+      },
+      "mesh_skin_weight_filter": {
+        "mode": "descendants_of_target_armatures",
+        "context": ""
+      },
+      "action_update_sections": [
+        {
+          "description": "Follow controllers rename",
+          "rules": [
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_Head\"]",
+                "\"][\"Follow_Head\"]"
+              ],
+              "new_data_path_substring": "[\"follow_head\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_Skull_02\"]",
+                "\"][\"Follow_Skull_02\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_skull_02\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_Tongue_01\"]",
+                "\"][\"Follow_Tongue_01\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_tongue_01\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_Jaw_down\"]",
+                "\"][\"Follow_Jaw_down\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_jaw_down\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_Neck\"]",
+                "\"][\"Follow_Neck\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_neck\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_Hand_L\"]",
+                "\"][\"Follow_Hand_L\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_hand_l\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_Hand_R\"]",
+                "\"][\"Follow_Hand_R\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_hand_r\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_Spine_02\"]",
+                "\"][\"Follow_Spine_02\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_spine_02\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_Pelvis\"]",
+                "\"][\"Follow_Pelvis\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_pelvis\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_Foot_L\"]",
+                "\"][\"Follow_Foot_L\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_foot_l\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_Foot_R\"]",
+                "\"][\"Follow_Foot_R\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_foot_r\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_Walk\"]",
+                "\"][\"Follow_Walk\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_walk\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_Gravity\"]",
+                "\"][\"Follow_Gravity\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_gravity\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_Root\"]",
+                "\"][\"Follow_Root\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_root\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_UpperLeg_L\"]",
+                "\"][\"Follow_UpperLeg_L\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_upperleg_l\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_LowerLeg_L\"]",
+                "\"][\"Follow_LowerLeg_L\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_lowerleg_l\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_UpperLeg_R\"]",
+                "\"][\"Follow_UpperLeg_R\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_upperleg_r\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_LowerLeg_R\"]",
+                "\"][\"Follow_LowerLeg_R\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_lowerleg_r\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_Pelvis\"]",
+                "\"][\"Follow_Pelvis\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_pelvis\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow_c_invert_Pelvis\"]",
+                "\"][\"Follow_invert_Pelvis\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_invert_pelvis\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Follow Shoulder\"]",
+                "\"][\"Follow_Shoulder\"]",
+                "\"][\"rp_Follow_Spine_02\"]",
+                "\"][\"Follow_Spline\"]"
+              ],
+              "new_data_path_substring": "\"][\"follow_spline\"]",
+              "remove_if_already_exists": true
+            }
+          ]
+        },
+        {
+          "description": "Snap controllers rename",
+          "rules": [
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Snap_c_Head\"]",
+                "\"][\"Snap_Head\"]"
+              ],
+              "new_data_path_substring": "\"][\"snap_head\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Snap_c_Skull_02\"]",
+                "\"][\"Snap_Skull_02\"]"
+              ],
+              "new_data_path_substring": "\"][\"snap_skull_02\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Snap_c_Tongue_01\"]",
+                "\"][\"Snap_Tongue_01\"]"
+              ],
+              "new_data_path_substring": "\"][\"snap_tongue_01\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Snap_c_Jaw_down\"]",
+                "\"][\"Snap_Jaw_down\"]"
+              ],
+              "new_data_path_substring": "\"][\"snap_jaw_down\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Snap_c_Neck\"]",
+                "\"][\"Snap_Neck\"]"
+              ],
+              "new_data_path_substring": "\"][\"snap_neck\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Snap_c_Hand_L\"]",
+                "\"][\"Snap_Hand_L\"]"
+              ],
+              "new_data_path_substring": "\"][\"snap_hand_l\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Snap_c_Hand_R\"]",
+                "\"][\"Snap_Hand_R\"]"
+              ],
+              "new_data_path_substring": "\"][\"snap_hand_r\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Snap_c_Spine_02\"]",
+                "\"][\"Snap_Spine_02\"]"
+              ],
+              "new_data_path_substring": "\"][\"snap_spine_02\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Snap_c_Pelvis\"]",
+                "\"][\"Snap_Pelvis\"]"
+              ],
+              "new_data_path_substring": "\"][\"snap_pelvis\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Snap_c_Foot_L\"]",
+                "\"][\"Snap_Foot_L\"]"
+              ],
+              "new_data_path_substring": "\"][\"snap_foot_l\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Snap_c_Foot_R\"]",
+                "\"][\"Snap_Foot_R\"]"
+              ],
+              "new_data_path_substring": "\"][\"snap_foot_r\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Snap_c_Walk\"]",
+                "\"][\"Snap_Walk\"]"
+              ],
+              "new_data_path_substring": "\"][\"snap_walk\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Snap_c_Gravity\"]",
+                "\"][\"Snap_Gravity\"]"
+              ],
+              "new_data_path_substring": "\"][\"snap_gravity\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"Snap_c_Root\"]",
+                "\"][\"Snap_Root\"]"
+              ],
+              "new_data_path_substring": "\"][\"snap_root\"]",
+              "remove_if_already_exists": true
+            }
+          ]
+        },
+        {
+          "description": "IK controllers rename",
+          "rules": [
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"AlignUp\"]"
+              ],
+              "new_data_path_substring": "\"][\"align_up\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"IKBlend\"]",
+                "\"][\"IkBlend\"]"
+              ],
+              "new_data_path_substring": "\"][\"ik_blend\"]",
+              "remove_if_already_exists": true
+            }
+          ]
+        },
+        {
+          "description": "Curve Follow controllers rename",
+          "rules": [
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "\"][\"CurveBlend\"]"
+              ],
+              "new_data_path_substring": "\"][\"curve_blend\"]",
+              "remove_if_already_exists": true
+            }
+          ]
+        },
+        {
+          "description": "Interp controllers rename",
+          "rules": [
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_UpperArm_L\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_UpperArm_L\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_LowerArm_L\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_LowerArm_L\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_UpperArm_R\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_UpperArm_R\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_LowerArm_R\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_LowerArm_R\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_UpperLeg_L\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_UpperLeg_L\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_LowerLeg_L\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_LowerLeg_L\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_UpperLeg_R\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_UpperLeg_R\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_LowerLeg_R\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_LowerLeg_R\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_Thigh_R\"]",
+                "pose.bones[\"c_Interp_c_Thigh_R.001\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_Thigh_R\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_Thigh_L\"]",
+                "pose.bones[\"c_Interp_c_Thigh_L.001\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_Thigh_L\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_Thigh_R.001\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_Thigh_R\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_Thigh_L.001\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_Thigh_L\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_Tail_00\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_Tail_00\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_Tail_01\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_Tail_01\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_Tail_02\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_Tail_02\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_Tail_03\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_Tail_03\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_Tail_04\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_Tail_04\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_Tail_05\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_Tail_05\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_Tongue_00\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_Tongue_00\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_Tongue_01\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_Tongue_01\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_Tongue_02\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_Tongue_02\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_Tongue_03\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_Tongue_03\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_Tongue_04\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_Tongue_04\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Interp_c_Tongue_05\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Stretch_Tongue_05\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_invert_Pelvis\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Invert_Pelvis\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Tongue_01_Item\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Tongue_Item\"]",
+              "remove_if_already_exists": true
+            }
+          ]
+        },
+        {
+          "description": "Curve Hook controllers rename",
+          "rules": [
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_hook_"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_CurveHook_",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_CurveHook_Tongue_00"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_CurveHook_Tongue_Root",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_CurveHook_Tongue_02"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_CurveHook_Tongue_Mid_01",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_CurveHook_Tongue_06"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_CurveHook_Tongue_Mid_02",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_CurveHook_Tongue_10"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_CurveHook_Tongue_Mid_03",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_CurveHook_Tongue_14"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_CurveHook_Tongue_Tip",
+              "remove_if_already_exists": true
+            }
+          ]
+        },
+        {
+          "description": "Head controllers rename",
+          "rules": [
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"Head_Item\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Head_Item\"]",
+              "remove_if_already_exists": true
+            }
+          ]
+        },
+        {
+          "description": "Eyes controllers rename",
+          "rules": [
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Eye_ref_track_R\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"Pole_Eye_R\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Eye_ref_track_L\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"Pole_Eye_L\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"Eyebrow_Full_R\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Eyebrow_Full_R\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"Eyebrow_Full_L\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Eyebrow_Full_L\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Eye_blink_pose_Up_L\"]",
+                "pose.bones[\"Eye_blink_pose_Up_L\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_UpperEyeBlink_Pose_L\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Eye_blink_pose_Up_R\"]",
+                "pose.bones[\"Eye_blink_pose_Up_R\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_UpperEyeBlink_Pose_R\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Eye_blink_pose_Down_L\"]",
+                "pose.bones[\"Eye_blink_pose_Down_L\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_LowerEyeBlink_Pose_L\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Eye_blink_pose_Down_R\"]",
+                "pose.bones[\"Eye_blink_pose_Down_R\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_LowerEyeBlink_Pose_R\"]",
+              "remove_if_already_exists": true
+            }
+          ]
+        },
+        {
+          "description": "Maw controllers rename",
+          "rules": [
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Lips_smile_pose_L\"]",
+                "pose.bones[\"Lips_smile_pose_L\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_LipsSmile_Pose_L\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Lips_smile_pose_R\"]",
+                "pose.bones[\"Lips_smile_pose_R\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_LipsSmile_Pose_R\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"Lips_top_pose\"]",
+                "pose.bones[\"c_Lips_top_pose\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_UpperLips_Pose\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"Lips_bot_pose\"]",
+                "pose.bones[\"c_Lips_bot_pose\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_LowerLips_Pose\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"Tongue_01_Item\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Tongue_Item\"]",
+              "remove_if_already_exists": true
+            }
+          ]
+        },
+        {
+          "description": "Paw controllers rename",
+          "rules": [
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Paw_Press_pose_L\"]",
+                "pose.bones[\"Paw_Press_pose_L\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Paw_Press_Pose_L\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_Paw_Press_pose_R\"]",
+                "pose.bones[\"Paw_Press_pose_R\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Paw_Press_Pose_R\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"Ik_Foot_L\"][\"Raise heel\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"Ik_Foot_L\"][\"raise_heel_action_eval\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"Ik_Foot_L\"][\"Spread toes\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"Ik_Foot_L\"][\"spread_toes_action_eval\"]",
+              "remove_if_already_exists": true
+            }
+          ]
+        },
+        {
+          "description": "Camera controllers rename",
+          "rules": [
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"Camera_FPV\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Camera_FPV\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"CameraLow_FPV\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_CameraLow_FPV\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"Camera_TPV\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Camera_TPV\"]",
+              "remove_if_already_exists": true
+            }
+          ]
+        },
+        {
+          "description": "Game data controllers rename",
+          "rules": [
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_BodyForward\"]",
+                "pose.bones[\"BodyForward\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_BaseBodyAim\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"FootPrint_L\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_FootPrint_L\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"FootPrint_R\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_FootPrint_R\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"Foot_Item_L\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Foot_Item_L\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"Foot_Item_R\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Foot_Item_R\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"Hand_Item_L\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Hand_Item_L\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"Hand_Item_R\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_Hand_Item_R\"]",
+              "remove_if_already_exists": true
+            }
+          ]
+        },
+        {
+          "description": "Game data controllers rename",
+          "rules": [
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_FlatLeftSoleZone\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_FlatSoleZone_L\"]",
+              "remove_if_already_exists": true
+            },
+            {
+              "operation": "replace_data_path_substrings",
+              "old_data_path_substrings": [
+                "pose.bones[\"c_FlatRightSoleZone\"]"
+              ],
+              "new_data_path_substring": "pose.bones[\"c_FlatSoleZone_R\"]",
+              "remove_if_already_exists": true
+            }
+          ]
+        },
+        {
+          "description": "Old deprecated controllers",
+          "rules": [
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_Hat\"]",
+                "pose.bones[\"Hat\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_Glasses\"]",
+                "pose.bones[\"Glasses\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_Eye_blink_pose_L\"]",
+                "pose.bones[\"c_Eye_blink_pose_R\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_Interp_Tail_00\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_Interp_Tail_01\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_Interp_Tail_02\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_Interp_Tail_03\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_Interp_Tail_04\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_Interp_Tail_05\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_Interp_Tongue_00\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_Interp_Tongue_01\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_Interp_Tongue_02\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_Interp_Tongue_03\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_Interp_Tongue_04\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_Interp_Tongue_05\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_hook_Tail_00\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_hook_Tail_01\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_hook_Tail_02\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_hook_Tail_03\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_hook_Tail_04\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_hook_Tail_05\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_hook_Tongue_00\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_hook_Tongue_01\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_hook_Tongue_02\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_hook_Tongue_03\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_hook_Tongue_04\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_hook_Tongue_05\"]"
+              ]
+            }
+          ]
+        },
+        {
+          "description": "Hidden Rig Points that should not be animate",
+          "rules": [
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"rp_follow_",
+                "pose.bones[\"rp_Follow_"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"rp_parent_",
+                "pose.bones[\"rp_Parent_"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"rp_c_Eye",
+                "pose.bones[\"rp_Eye"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"rp_Interp_"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"rp_InterpParent_"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"rp_InterpChild_"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"rp_oldPelvis\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"DebugLine_PoleSub_Frontleg_R\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"DebugLine_PoleSub_Frontleg_L\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"DebugLine_Pole_Frontleg_R\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"DebugLine_Pole_Frontleg_L\"]"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"rp_"
+              ]
+            }
+          ]
+        },
+        {
+          "description": "Construction bones that should not be animate",
+          "rules": [
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"cons_"
+              ]
+            }
+          ]
+        },
+        {
+          "description": "Old deprecated animate",
+          "rules": [
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_Throat"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_Chin_01"
+              ]
+            },
+            {
+              "operation": "remove_curves_by_data_path_substrings",
+              "data_path_substrings": [
+                "pose.bones[\"c_Chin_02"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
