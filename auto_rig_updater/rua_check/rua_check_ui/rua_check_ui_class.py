@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 class RUA_OT_CheckSkinWeights(bpy.types.Operator):
     bl_idname = "rua.check_skin_weights"
     bl_label = "Check Skin Weights"
-    bl_description = "Print vertex groups with no positive weights on meshes parented to the target armature"
+    bl_description = "Warn about used vertex groups with no matching bone in the target armature"
 
     if TYPE_CHECKING:
         target_object: str
@@ -54,20 +54,18 @@ class RUA_OT_CheckSkinWeights(bpy.types.Operator):
             self.report({'WARNING'}, error)
             return {'CANCELLED'}
 
-        results = rua_skin.rua_skin_utils.get_armature_vertex_groups_without_influence(obj)
+        results = rua_skin.rua_skin_utils.get_vertex_groups_without_bones(obj)
         print(f"[Rig Updater] {obj.name}: checked {len(results)} mesh object(s).")
         for mesh_name, group_names in results.items():
-            if group_names:
-                print(f"  {mesh_name}: vertex groups without influence ({len(group_names)}):")
-                for name in group_names:
-                    print(f"    - {name}")
-            else:
-                print(bpl.color_set.yellow(f"  Warning: '{mesh_name}' has zero vertex groups without influence."))
+            for name in group_names:
+                print(bpl.color_set.yellow(
+                    f'Warning; Mesh "{mesh_name}" Group "{name}" not found in the armature "{obj.name}"'
+                ))
 
         group_count = sum(len(group_names) for group_names in results.values())
         self.report(
             {'INFO'},
-            f"{group_count} vertex groups without influence across {len(results)} mesh object(s). See the system console.",
+            f"{group_count} used vertex groups without matching bones across {len(results)} mesh object(s). See the system console.",
         )
 
         return {'FINISHED'}

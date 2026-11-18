@@ -26,7 +26,7 @@ def update_mesh_skin_weight_backward_compatibility(select_only: bool = False) ->
             skin_updater.update_mesh_skin_weight(obj, ['Twist01_LowerLeg_R', 'Twist_01_LowerLeg_R'], 'LowerLeg_Twist_01_R')
 
 
-def get_vertex_groups_without_influence(obj: bpy.types.Object) -> list[str]:
+def get_used_vertex_groups(obj: bpy.types.Object) -> list[str]:
     mesh = obj.data
     if not isinstance(mesh, bpy.types.Mesh):
         raise ValueError(f"Object '{obj.name}' is not a mesh.")
@@ -39,7 +39,7 @@ def get_vertex_groups_without_influence(obj: bpy.types.Object) -> list[str]:
             if assignment.weight > 0.0:
                 influenced_groups.add(assignment.group)
 
-    return [group.name for group in obj.vertex_groups if group.index not in influenced_groups]
+    return [group.name for group in obj.vertex_groups if group.index in influenced_groups]
 
 
 def get_skin_check_error(armature: bpy.types.Object) -> str | None:
@@ -59,13 +59,18 @@ def get_skin_check_error(armature: bpy.types.Object) -> str | None:
     return None
 
 
-def get_armature_vertex_groups_without_influence(armature: bpy.types.Object) -> dict[str, list[str]]:
+def get_vertex_groups_without_bones(armature: bpy.types.Object) -> dict[str, list[str]]:
     error = get_skin_check_error(armature)
     if error is not None:
         raise ValueError(error)
 
+    armature_data = armature.data
+    if not isinstance(armature_data, bpy.types.Armature):
+        raise ValueError(f"Object '{armature.name}' has no armature data.")
+    bone_names = {bone.name for bone in armature_data.bones}
+
     return {
-        child.name: get_vertex_groups_without_influence(child)
+        child.name: [name for name in get_used_vertex_groups(child) if name not in bone_names]
         for child in armature.children_recursive
         if child.type == 'MESH'
     }
