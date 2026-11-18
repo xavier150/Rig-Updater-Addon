@@ -14,7 +14,6 @@ import bpy
 if TYPE_CHECKING:
     import bpy.stub_internal.rna_enums as rna_enums
 
-from ... import rua_skin
 from .. import rua_action
 
 
@@ -33,21 +32,6 @@ class RUA_OT_UpdateRigBackwardCompatibility(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class RUA_OT_UpdateMeshSkinWeightBackwardCompatibility(bpy.types.Operator):
-    bl_idname = "rua.update_mesh_skin_weight_backward_compatibility"
-    bl_label = "Update Mesh Skin Weight Backward Compatibility"
-    bl_description = "Update vertex groups on selected meshes for the newer rig"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    def execute(self, context: bpy.types.Context) -> "set[rna_enums.OperatorReturnItems]":
-        try:
-            rua_skin.rua_skin_utils.update_mesh_skin_weight_backward_compatibility(select_only=True)
-        except (RuntimeError, ValueError, AttributeError) as error:
-            self.report({'ERROR'}, str(error))
-            return {'CANCELLED'}
-        return {'FINISHED'}
-
-
 # -------------------------------------------------------------------
 #   Register & Unregister
 # -------------------------------------------------------------------
@@ -55,7 +39,6 @@ class RUA_OT_UpdateMeshSkinWeightBackwardCompatibility(bpy.types.Operator):
 
 classes = (
     RUA_OT_UpdateRigBackwardCompatibility,
-    RUA_OT_UpdateMeshSkinWeightBackwardCompatibility,
 )
 
 

@@ -12,9 +12,8 @@ import bpy
 from .. import bbpl
 
 
-def update_mesh_skin_weight_backward_compatibility(select_only: bool = False) -> None:
+def update_mesh_skin_weight_backward_compatibility(objects: list[bpy.types.Object]) -> None:
     skin_updater = bbpl.backward_compatibility.skin_weight_mesh_updater.SkinWeightMeshUpdater()
-    objects = bpy.context.selected_objects if select_only else bpy.data.objects
 
     for obj in objects:
         if obj.type == "MESH":

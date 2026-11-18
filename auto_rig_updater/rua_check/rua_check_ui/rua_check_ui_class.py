@@ -7,68 +7,7 @@
 #  https://github.com/xavier150/Rig-Updater-Addon
 # ----------------------------------------------
 
-from typing import TYPE_CHECKING
-
 import bpy
-
-from ... import bpl
-from ... import rua_skin
-
-if TYPE_CHECKING:
-    import bpy.stub_internal.rna_enums as rna_enums
-
-
-class RUA_OT_CheckSkinWeights(bpy.types.Operator):
-    bl_idname = "rua.check_skin_weights"
-    bl_label = "Check Skin Weights"
-    bl_description = "Warn about used vertex groups with no matching bone in the target armature"
-
-    if TYPE_CHECKING:
-        target_object: str
-    else:
-        target_object: bpy.props.StringProperty(
-            name="Target Object",
-            description="Armature object name; leave empty to use the active armature",
-            default="",
-            options={'SKIP_SAVE'},
-        )
-
-    def execute(self, context: bpy.types.Context) -> "set[rna_enums.OperatorReturnItems]":
-        if self.target_object:
-            scene = context.scene
-            if scene is None:
-                self.report({'WARNING'}, "No active scene to look up the target object.")
-                return {'CANCELLED'}
-            obj = scene.objects.get(self.target_object)
-            if obj is None:
-                self.report({'WARNING'}, f"Object '{self.target_object}' was not found in the scene.")
-                return {'CANCELLED'}
-        else:
-            obj = context.object
-            if obj is None:
-                self.report({'WARNING'}, "Select an armature to check the skin weights of its meshes.")
-                return {'CANCELLED'}
-
-        error = rua_skin.rua_skin_utils.get_skin_check_error(obj)
-        if error is not None:
-            self.report({'WARNING'}, error)
-            return {'CANCELLED'}
-
-        results = rua_skin.rua_skin_utils.get_vertex_groups_without_bones(obj)
-        print(f"[Rig Updater] {obj.name}: checked {len(results)} mesh object(s).")
-        for mesh_name, group_names in results.items():
-            for name in group_names:
-                print(bpl.color_set.yellow(
-                    f'Warning; Mesh "{mesh_name}" Group "{name}" not found in the armature "{obj.name}"'
-                ))
-
-        group_count = sum(len(group_names) for group_names in results.values())
-        self.report(
-            {'INFO'},
-            f"{group_count} used vertex groups without matching bones across {len(results)} mesh object(s). See the system console.",
-        )
-
-        return {'FINISHED'}
 
 
 # -------------------------------------------------------------------
@@ -77,7 +16,6 @@ class RUA_OT_CheckSkinWeights(bpy.types.Operator):
 
 
 classes = (
-    RUA_OT_CheckSkinWeights,
 )
 
 
