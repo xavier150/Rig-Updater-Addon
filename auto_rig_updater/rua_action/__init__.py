@@ -11,11 +11,11 @@ import importlib
 
 import bpy
 
-from . import rua_action
+from . import rua_action_utils
 from . import rua_action_ui
 
-if "rua_action" in locals():
-    importlib.reload(rua_action)
+if "rua_action_utils" in locals():
+    importlib.reload(rua_action_utils)
 if "rua_action_ui" in locals():
     importlib.reload(rua_action_ui)
 

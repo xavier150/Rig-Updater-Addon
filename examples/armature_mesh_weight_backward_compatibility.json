@@ -1,0 +1,30 @@
+{
+  "update_tasks": [
+    {
+      "replace_operations": [
+        {"description": "Rename Hand_L", "old_data_path_substrings": ["Hand_L"], "new_data_path_substring": "hand_l", "remove_if_already_exists": true},
+        {"description": "Rename Index_00_L", "old_data_path_substrings": ["Index_00_L"], "new_data_path_substring": "index_metacarpal_l", "remove_if_already_exists": true},
+        {"description": "Rename Index_01_L", "old_data_path_substrings": ["Index_01_L"], "new_data_path_substring": "index_01_l", "remove_if_already_exists": true},
+        {"description": "Rename Index_02_L", "old_data_path_substrings": ["Index_02_L"], "new_data_path_substring": "index_02_l", "remove_if_already_exists": true},
+        {"description": "Rename Index_03_L", "old_data_path_substrings": ["Index_03_L"], "new_data_path_substring": "index_03_l", "remove_if_already_exists": true},
+        {"description": "Rename Index_04_L", "old_data_path_substrings": ["Index_04_L"], "new_data_path_substring": "index_claw_l", "remove_if_already_exists": true},
+        {"description": "Rename Middle_00_L", "old_data_path_substrings": ["Middle_00_L"], "new_data_path_substring": "middle_metacarpal_l", "remove_if_already_exists": true},
+        {"description": "Rename Middle_01_L", "old_data_path_substrings": ["Middle_01_L"], "new_data_path_substring": "middle_01_l", "remove_if_already_exists": true},
+        {"description": "Rename Middle_02_L", "old_data_path_substrings": ["Middle_02_L"], "new_data_path_substring": "middle_02_l", "remove_if_already_exists": true},
+        {"description": "Rename Middle_03_L", "old_data_path_substrings": ["Middle_03_L"], "new_data_path_substring": "middle_03_l", "remove_if_already_exists": true},
+        {"description": "Rename Middle_04_L", "old_data_path_substrings": ["Middle_04_L"], "new_data_path_substring": "middle_claw_l", "remove_if_already_exists": true},
+        {"description": "Rename Pinky_00_L", "old_data_path_substrings": ["Pinky_00_L"], "new_data_path_substring": "pinky_metacarpal_l", "remove_if_already_exists": true},
+        {"description": "Rename Pinky_01_L", "old_data_path_substrings": ["Pinky_01_L"], "new_data_path_substring": "pinky_01_l", "remove_if_already_exists": true},
+        {"description": "Rename Pinky_02_L", "old_data_path_substrings": ["Pinky_02_L"], "new_data_path_substring": "pinky_02_l", "remove_if_already_exists": true},
+        {"description": "Rename Pinky_03_L", "old_data_path_substrings": ["Pinky_03_L"], "new_data_path_substring": "pinky_03_l", "remove_if_already_exists": true},
+        {"description": "Rename Pinky_04_L", "old_data_path_substrings": ["Pinky_04_L"], "new_data_path_substring": "pinky_claw_l", "remove_if_already_exists": true},
+        {"description": "Rename Ring_00_L", "old_data_path_substrings": ["Ring_00_L"], "new_data_path_substring": "ring_metacarpal_l", "remove_if_already_exists": true},
+        {"description": "Rename Ring_01_L", "old_data_path_substrings": ["Ring_01_L"], "new_data_path_substring": "ring_01_l", "remove_if_already_exists": true},
+        {"description": "Rename Ring_02_L", "old_data_path_substrings": ["Ring_02_L"], "new_data_path_substring": "ring_02_l", "remove_if_already_exists": true},
+        {"description": "Rename Ring_03_L", "old_data_path_substrings": ["Ring_03_L"], "new_data_path_substring": "ring_03_l", "remove_if_already_exists": true},
+        {"description": "Rename Ring_04_L", "old_data_path_substrings": ["Ring_04_L"], "new_data_path_substring": "ring_claw_l", "remove_if_already_exists": true}
+      ],
+      "remove_operations": []
+    }
+  ]
+}

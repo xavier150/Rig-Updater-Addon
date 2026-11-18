@@ -12,6 +12,7 @@ import importlib
 import bpy
 
 from .. import rua_action
+from .. import rua_armature
 from .. import rua_check
 from . import rua_ui_utils
 
@@ -29,6 +30,7 @@ class RUA_PT_MainPanel(bpy.types.Panel):
     def draw(self, context: bpy.types.Context) -> None:
         layout = self.layout
         if layout is not None:
+            rua_armature.rua_armature_ui.rua_armature_ui_utils.draw(layout, context)
             rua_action.rua_action_ui.rua_action_ui_utils.draw(layout, context)
             rua_check.rua_check_ui.rua_check_ui_utils.draw(layout, context)
 

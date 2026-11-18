@@ -7,25 +7,59 @@
 #  https://github.com/xavier150/Rig-Updater-Addon
 # ----------------------------------------------
 
+from typing import List
+
 import bpy
 
 from .. import bbpl
+from .. import rua_armature
 
+def get_armature_children_meshes(armature: bpy.types.Object) -> List[bpy.types.Object]:
+    if not isinstance(armature.data, bpy.types.Armature):
+        raise ValueError(f"Object '{armature.name}' is not an armature.")
+    return [child for child in armature.children_recursive if child.type == 'MESH']
 
-def update_mesh_skin_weight_backward_compatibility(objects: list[bpy.types.Object]) -> None:
+def update_mesh_skin_weight_backward_compatibility(
+    objects: List[bpy.types.Object],
+    configuration: rua_armature.rua_armature_type.MeshWeightBackwardCompatibility,
+    print_log: bool = False,
+) -> None:
     skin_updater = bbpl.backward_compatibility.skin_weight_mesh_updater.SkinWeightMeshUpdater()
+    skin_updater.print_log = print_log
+
+    print(f"Starting mesh skin weight update backward compatibility with {len(objects)} objects...")
 
     for obj in objects:
         if obj.type == "MESH":
-            skin_updater.update_mesh_skin_weight(obj, ['Twist01_UpperArm_L', 'Twist_01_UpperArm_L'], 'UpperArm_Twist_01_L')
-            skin_updater.update_mesh_skin_weight(obj, ['Twist01_UpperArm_R', 'Twist_01_UpperArm_R'], 'UpperArm_Twist_01_R')
-            skin_updater.update_mesh_skin_weight(obj, ['Twist01_LowerArm_L', 'Twist_01_LowerArm_L'], 'LowerArm_Twist_01_L')
-            skin_updater.update_mesh_skin_weight(obj, ['Twist01_LowerArm_R', 'Twist_01_LowerArm_R'], 'LowerArm_Twist_01_R')
-            skin_updater.update_mesh_skin_weight(obj, ['Twist01_LowerLeg_L', 'Twist_01_LowerLeg_L'], 'LowerLeg_Twist_01_L')
-            skin_updater.update_mesh_skin_weight(obj, ['Twist01_LowerLeg_R', 'Twist_01_LowerLeg_R'], 'LowerLeg_Twist_01_R')
+            for task in configuration.update_tasks:
+                for operation in task.replace_operations:
+                    for old_name in operation.old_data_path_substrings:
+                        if old_name == operation.new_data_path_substring:
+                            continue
+                        old_group = obj.vertex_groups.get(old_name)
+                        if old_group is None:
+                            continue
+                        if obj.vertex_groups.get(operation.new_data_path_substring) is not None:
+                            if operation.remove_if_already_exists:
+                                obj.vertex_groups.remove(old_group)
+                                skin_updater.remove_weights += 1
+                                print(f'"{old_name}" removed from "{obj.name}"; keeping "{operation.new_data_path_substring}".')
+                            else:
+                                print(f'Warning; Mesh "{obj.name}" already has Group "{operation.new_data_path_substring}"; keeping "{old_name}".')
+                            continue
+                        skin_updater.update_mesh_skin_weight(obj, [old_name], operation.new_data_path_substring)
+                for operation in task.remove_operations:
+                    for old_name in operation.old_data_path_substrings:
+                        group = obj.vertex_groups.get(old_name)
+                        if group is not None:
+                            obj.vertex_groups.remove(group)
+                            skin_updater.remove_weights += 1
+                            print(f'"{old_name}" removed from "{obj.name}".')
+
+    skin_updater.print_update_log()
 
 
-def get_used_vertex_groups(obj: bpy.types.Object) -> list[str]:
+def get_used_vertex_groups(obj: bpy.types.Object) -> List[str]:
     mesh = obj.data
     if not isinstance(mesh, bpy.types.Mesh):
         raise ValueError(f"Object '{obj.name}' is not a mesh.")
@@ -58,7 +92,7 @@ def get_skin_check_error(armature: bpy.types.Object) -> str | None:
     return None
 
 
-def get_vertex_groups_without_bones(armature: bpy.types.Object) -> dict[str, list[str]]:
+def get_vertex_groups_without_bones(armature: bpy.types.Object) -> dict[str, List[str]]:
     error = get_skin_check_error(armature)
     if error is not None:
         raise ValueError(error)

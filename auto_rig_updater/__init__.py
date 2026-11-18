@@ -15,6 +15,7 @@ try:
     from . import bpl
     from . import config
     from . import rua_action
+    from . import rua_armature
     from . import rua_check
     from . import rua_skin
     from . import rua_ui
@@ -25,6 +26,8 @@ try:
         importlib.reload(bbpl)
     if "config" in locals():
         importlib.reload(config)
+    if "rua_armature" in locals():
+        importlib.reload(rua_armature)
     if "rua_skin" in locals():
         importlib.reload(rua_skin)
     if "rua_action" in locals():
@@ -52,6 +55,7 @@ try:
                 bpy.utils.register_class(cls)
 
             bbpl.register()
+            rua_armature.register()
             rua_skin.register()
             rua_action.register()
             rua_check.register()
@@ -71,6 +75,7 @@ try:
             rua_check.unregister()
             rua_action.unregister()
             rua_skin.unregister()
+            rua_armature.unregister()
             bbpl.unregister()
 
             for cls in reversed(classes):
