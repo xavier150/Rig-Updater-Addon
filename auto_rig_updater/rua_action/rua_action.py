@@ -2,9 +2,14 @@
 #
 # SPDX-License-Identifier: MIT
 
+# ----------------------------------------------
+#  Rig Updater
+#  https://github.com/xavier150/Rig-Updater-Addon
+# ----------------------------------------------
+
 import bpy
 
-from . import bbpl
+from .. import bbpl
 
 
 def update_action_backward_compatibility(print_log: bool = False) -> None:

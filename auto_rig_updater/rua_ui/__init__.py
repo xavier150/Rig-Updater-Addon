@@ -11,9 +11,8 @@ import importlib
 
 import bpy
 
-from .. import bbpl
 from .. import rua_action
-from .. import rua_skin
+from .. import rua_check
 from . import rua_ui_utils
 
 if "rua_ui_utils" in locals():
@@ -27,61 +26,28 @@ class RUA_PT_MainPanel(bpy.types.Panel):
     bl_region_type = 'UI'
     bl_category = 'Rig Updater'
 
-    def draw(self, context):
-        accordion = bbpl.blender_layout.layout_accordion.get_accordion(context.scene, "rua_actions_accordion")
-        if accordion:
-            _, panel = accordion.draw(self.layout)
-            if panel:
-                panel.operator("rua.update_rig_backward_compatibility")
-                panel.operator("rua.update_mesh_skin_weight_backward_compatibility")
+    def draw(self, context: bpy.types.Context) -> None:
+        layout = self.layout
+        if layout is not None:
+            rua_action.rua_action_ui.rua_action_ui_utils.draw(layout, context)
+            rua_check.rua_check_ui.rua_check_ui_utils.draw(layout, context)
 
 
-class RUA_OT_UpdateRigBackwardCompatibility(bpy.types.Operator):
-    bl_idname = "rua.update_rig_backward_compatibility"
-    bl_label = "Update Rig Backward Compatibility"
-    bl_description = "Update local animation actions for the newer rig"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    def execute(self, context):
-        try:
-            rua_action.update_action_backward_compatibility()
-        except (RuntimeError, ValueError, AttributeError) as error:
-            self.report({'ERROR'}, str(error))
-            return {'CANCELLED'}
-        return {'FINISHED'}
-
-
-class RUA_OT_UpdateMeshSkinWeightBackwardCompatibility(bpy.types.Operator):
-    bl_idname = "rua.update_mesh_skin_weight_backward_compatibility"
-    bl_label = "Update Mesh Skin Weight Backward Compatibility"
-    bl_description = "Update vertex groups on selected meshes for the newer rig"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    def execute(self, context):
-        try:
-            rua_skin.update_mesh_skin_weight_backward_compatibility(select_only=True)
-        except (RuntimeError, ValueError, AttributeError) as error:
-            self.report({'ERROR'}, str(error))
-            return {'CANCELLED'}
-        return {'FINISHED'}
+# -------------------------------------------------------------------
+#   Register & Unregister
+# -------------------------------------------------------------------
 
 
 classes = (
-    RUA_OT_UpdateRigBackwardCompatibility,
-    RUA_OT_UpdateMeshSkinWeightBackwardCompatibility,
     RUA_PT_MainPanel,
 )
 
 
-def register():
+def register() -> None:
     for cls in classes:
         bpy.utils.register_class(cls)
 
-    bpy.types.Scene.rua_actions_accordion = bbpl.blender_layout.layout_accordion.add_ui_accordion(name="Actions")
 
-
-def unregister():
-    del bpy.types.Scene.rua_actions_accordion
-
+def unregister() -> None:
     for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
