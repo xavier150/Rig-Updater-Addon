@@ -33,23 +33,23 @@ def update_mesh_skin_weight_backward_compatibility(
         if obj.type == "MESH":
             for task in configuration.update_tasks:
                 for operation in task.replace_operations:
-                    for old_name in operation.old_data_path_substrings:
-                        if old_name == operation.new_data_path_substring:
+                    for old_name in operation.old:
+                        if old_name == operation.new:
                             continue
                         old_group = obj.vertex_groups.get(old_name)
                         if old_group is None:
                             continue
-                        if obj.vertex_groups.get(operation.new_data_path_substring) is not None:
+                        if obj.vertex_groups.get(operation.new) is not None:
                             if operation.remove_if_already_exists:
                                 obj.vertex_groups.remove(old_group)
                                 skin_updater.remove_weights += 1
-                                print(f'"{old_name}" removed from "{obj.name}"; keeping "{operation.new_data_path_substring}".')
+                                print(f'"{old_name}" removed from "{obj.name}"; keeping "{operation.new}".')
                             else:
-                                print(f'Warning; Mesh "{obj.name}" already has Group "{operation.new_data_path_substring}"; keeping "{old_name}".')
+                                print(f'Warning; Mesh "{obj.name}" already has Group "{operation.new}"; keeping "{old_name}".')
                             continue
-                        skin_updater.update_mesh_skin_weight(obj, [old_name], operation.new_data_path_substring)
+                        skin_updater.update_mesh_skin_weight(obj, [old_name], operation.new)
                 for operation in task.remove_operations:
-                    for old_name in operation.old_data_path_substrings:
+                    for old_name in operation.old:
                         group = obj.vertex_groups.get(old_name)
                         if group is not None:
                             obj.vertex_groups.remove(group)

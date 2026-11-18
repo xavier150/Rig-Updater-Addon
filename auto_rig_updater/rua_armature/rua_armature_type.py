@@ -13,14 +13,14 @@ from typing import List
 
 @dataclasses.dataclass(frozen=True)
 class CompatibilityOperation:
-    description: str
-    old_data_path_substrings: List[str]
-    new_data_path_substring: str
+    old: List[str]
+    new: str
     remove_if_already_exists: bool
 
 
 @dataclasses.dataclass(frozen=True)
 class UpdateTask:
+    description: str
     replace_operations: List[CompatibilityOperation]
     remove_operations: List[CompatibilityOperation]
 
