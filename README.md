@@ -13,7 +13,7 @@ In **Rig Updater > Actions**, you will find buttons to update the meshes skin we
 
 You have two buttons:
 - The `Update Mesh Skin Weight Backward Compatibility` to update the weights of the meshes of an armature.
-<img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/skin/update_mesh_skin_weight_result.webp" alt="Update Mesh Skin Weight Result" width="auto" height="200">
+<img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/skin/update_mesh_skin_weight_result.webp" alt="Update Mesh Skin Weight Result" width="auto" height="80%">
 
 - And the `Update Rig Backward Compatibility` to update the animation actions for an armature.
 
