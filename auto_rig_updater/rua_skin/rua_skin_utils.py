@@ -7,7 +7,7 @@
 #  https://github.com/xavier150/Rig-Updater-Addon
 # ----------------------------------------------
 
-from typing import List
+from typing import Dict, List, Optional, Set
 
 import bpy
 
@@ -39,7 +39,7 @@ def get_armature_children_meshes(armature: bpy.types.Object) -> List[bpy.types.O
         raise ValueError(f"Object '{armature.name}' is not an armature.")
     return [child for child in armature.children_recursive if child.type == 'MESH']
 
-def update_mesh_skin_weight_backward_compatibility(
+def update_meshes_weights_backward_compatibility(
     objects: List[bpy.types.Object],
     configuration: rua_skin_type.MeshWeightBackwardCompatibility,
     print_log: bool = False,
@@ -74,7 +74,7 @@ def get_used_vertex_groups(obj: bpy.types.Object) -> List[str]:
     if mesh.is_editmode:
         raise ValueError(f"Exit Edit Mode on '{obj.name}' before checking its skin weights.")
 
-    influenced_groups: set[int] = set()
+    influenced_groups: Set[int] = set()
     for vertex in mesh.vertices:
         for assignment in vertex.groups:
             if assignment.weight > 0.0:
@@ -83,7 +83,7 @@ def get_used_vertex_groups(obj: bpy.types.Object) -> List[str]:
     return [group.name for group in obj.vertex_groups if group.index in influenced_groups]
 
 
-def get_skin_check_error(armature: bpy.types.Object) -> str | None:
+def get_skin_check_error(armature: bpy.types.Object) -> Optional[str]:
     if armature.type != 'ARMATURE':
         return f"Object '{armature.name}' is not an armature."
 
@@ -100,7 +100,7 @@ def get_skin_check_error(armature: bpy.types.Object) -> str | None:
     return None
 
 
-def get_vertex_groups_without_bones(armature: bpy.types.Object) -> dict[str, List[str]]:
+def get_vertex_groups_without_bones(armature: bpy.types.Object) -> Dict[str, List[str]]:
     error = get_skin_check_error(armature)
     if error is not None:
         raise ValueError(error)

@@ -63,8 +63,8 @@ def _check_armatures(operator: bpy.types.Operator, armatures: List[bpy.types.Obj
     return {'FINISHED'}
 
 
-class RUA_OT_CheckMeshWeights(bpy.types.Operator):
-    bl_idname = "rua.check_skin_weights"
+class RUA_OT_CheckMeshesWeights(bpy.types.Operator):
+    bl_idname = "rua.check_meshes_weights"
     bl_label = "Check Meshes Weights (Active)"
     bl_description = "Warn about used vertex groups with no matching bone in the target armature"
 
@@ -97,8 +97,8 @@ class RUA_OT_CheckMeshWeights(bpy.types.Operator):
         return _check_armatures(self, [obj])
 
 
-class RUA_OT_CheckMeshWeightsAll(bpy.types.Operator):
-    bl_idname = "rua.check_skin_weights_all"
+class RUA_OT_CheckMeshesWeightsAll(bpy.types.Operator):
+    bl_idname = "rua.check_meshes_weights_all"
     bl_label = "Check Meshes Weights (All)"
     bl_description = "Warn about used vertex groups with no matching bone across all armatures in the scene"
 
@@ -110,8 +110,8 @@ class RUA_OT_CheckMeshWeightsAll(bpy.types.Operator):
         return _check_armatures(self, armatures)
 
 
-class RUA_OT_UpdateMeshWeightBackwardCompatibility(bpy.types.Operator):
-    bl_idname = "rua.update_mesh_skin_weight_backward_compatibility"
+class RUA_OT_UpdateMeshesWeightsBackwardCompatibility(bpy.types.Operator):
+    bl_idname = "rua.update_meshes_weights_backward_compatibility"
     bl_label = "Update Mesh Weights"
     bl_description = "Update vertex groups on meshes parented to the target armature for the newer rig"
     bl_options = {'REGISTER', 'UNDO'}
@@ -159,7 +159,7 @@ class RUA_OT_UpdateMeshWeightBackwardCompatibility(bpy.types.Operator):
             self.report({'WARNING'}, error)
             return {'CANCELLED'}
         configuration = rua_skin_utils.load_mesh_weight_backward_compatibility(filepath)
-        rua_skin_utils.update_mesh_skin_weight_backward_compatibility(objects, configuration)
+        rua_skin_utils.update_meshes_weights_backward_compatibility(objects, configuration)
         return {'FINISHED'}
 
 
@@ -169,9 +169,9 @@ class RUA_OT_UpdateMeshWeightBackwardCompatibility(bpy.types.Operator):
 
 
 classes = (
-    RUA_OT_CheckMeshWeights,
-    RUA_OT_CheckMeshWeightsAll,
-    RUA_OT_UpdateMeshWeightBackwardCompatibility,
+    RUA_OT_CheckMeshesWeights,
+    RUA_OT_CheckMeshesWeightsAll,
+    RUA_OT_UpdateMeshesWeightsBackwardCompatibility,
 )
 
 

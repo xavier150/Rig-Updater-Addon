@@ -17,5 +17,5 @@ def draw(layout: bpy.types.UILayout, context: bpy.types.Context) -> None:
     if accordion:
         _, panel = accordion.draw(layout)
         if panel:
-            panel.operator("rua.update_mesh_skin_weight_backward_compatibility")
-            panel.operator("rua.update_rig_backward_compatibility")
+            panel.operator("rua.update_meshes_weights_backward_compatibility")
+            panel.operator("rua.update_actions_backward_compatibility")

@@ -18,8 +18,8 @@ def draw(layout: bpy.types.UILayout, context: bpy.types.Context) -> None:
         _, panel = accordion.draw(layout)
         if panel:
             row = panel.row(align=True)
-            row.operator("rua.check_skin_weights")
-            row.operator("rua.check_skin_weights_all")
+            row.operator("rua.check_meshes_weights")
+            row.operator("rua.check_meshes_weights_all")
             row = panel.row(align=True)
-            row.operator("rua.check_actions_active")
+            row.operator("rua.check_actions")
             row.operator("rua.check_actions_all")

@@ -65,8 +65,8 @@ def _check_armatures(operator: bpy.types.Operator, armatures: List[bpy.types.Obj
     return {'FINISHED'}
 
 
-class RUA_OT_CheckActionsActive(bpy.types.Operator):
-    bl_idname = "rua.check_actions_active"
+class RUA_OT_CheckActions(bpy.types.Operator):
+    bl_idname = "rua.check_actions"
     bl_label = "Check Action (Active)"
     bl_description = "Check configured actions against the target armature"
 
@@ -104,8 +104,8 @@ class RUA_OT_CheckActionsAll(bpy.types.Operator):
         return _check_armatures(self, armatures)
 
 
-class RUA_OT_UpdateRigBackwardCompatibility(bpy.types.Operator):
-    bl_idname = "rua.update_rig_backward_compatibility"
+class RUA_OT_UpdateActionsBackwardCompatibility(bpy.types.Operator):
+    bl_idname = "rua.update_actions_backward_compatibility"
     bl_label = "Update Actions"
     bl_description = "Update local animation actions for the newer rig"
     bl_options = {'REGISTER', 'UNDO'}
@@ -145,9 +145,9 @@ class RUA_OT_UpdateRigBackwardCompatibility(bpy.types.Operator):
 
 
 classes = (
-    RUA_OT_CheckActionsActive,
+    RUA_OT_CheckActions,
     RUA_OT_CheckActionsAll,
-    RUA_OT_UpdateRigBackwardCompatibility,
+    RUA_OT_UpdateActionsBackwardCompatibility,
 )
 
 
