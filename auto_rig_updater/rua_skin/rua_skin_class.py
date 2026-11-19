@@ -52,6 +52,7 @@ class RUA_OT_CheckMeshWeights(bpy.types.Operator):
 
         error = rua_skin_utils.get_skin_check_error(obj)
         if error is not None:
+            print(bpl.color_set.yellow(f"[Rig Updater] Warning: {error}"))
             self.report({'WARNING'}, error)
             return {'CANCELLED'}
 
@@ -106,6 +107,7 @@ class RUA_OT_UpdateMeshWeightBackwardCompatibility(bpy.types.Operator):
 
         error = rua_skin_utils.get_skin_check_error(obj)
         if error is not None:
+            print(bpl.color_set.yellow(f"[Rig Updater] Warning: {error}"))
             self.report({'WARNING'}, error)
             return {'CANCELLED'}
 
@@ -116,6 +118,7 @@ class RUA_OT_UpdateMeshWeightBackwardCompatibility(bpy.types.Operator):
         )
         error = rua_armature.rua_armature_utils.get_config_file_error(filepath)
         if error is not None:
+            print(bpl.color_set.yellow(f"[Rig Updater] Warning: {error}"))
             self.report({'WARNING'}, error)
             return {'CANCELLED'}
         configuration = rua_armature.rua_armature_utils.load_mesh_weight_backward_compatibility(filepath)
