@@ -106,7 +106,7 @@ class RUA_OT_CheckActionsAll(bpy.types.Operator):
 
 class RUA_OT_UpdateRigBackwardCompatibility(bpy.types.Operator):
     bl_idname = "rua.update_rig_backward_compatibility"
-    bl_label = "Update Rig Backward Compatibility"
+    bl_label = "Update Actions"
     bl_description = "Update local animation actions for the newer rig"
     bl_options = {'REGISTER', 'UNDO'}
 

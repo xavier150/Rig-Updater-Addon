@@ -12,15 +12,15 @@ You can found example json files in the `examples` folder of this repository.
 In **Rig Updater > Actions**, you will find buttons to update the meshes skin weights and animation actions for backward compatibility.
 
 You have two buttons:
-- The `Update Mesh Skin Weight Backward Compatibility` to update the weights of the meshes of an armature.
+- The `Update Mesh Weights` button updates the weights of an armature's meshes.
 <img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/skin/update_mesh_skin_weight_result.webp" alt="Update Mesh Skin Weight Result" width="auto" height="80%">
 
-- And the `Update Rig Backward Compatibility` to update the animation actions for an armature.
+- The `Update Actions` button updates animation actions for an armature.
 
-In **Rig Updater > Check**, you can check mesh skin weights and action channels.
-**Check Action (Active)** checks the active armature; **Check Actions (All)**
-checks each armature in the scene using its own rig configuration. Results are
-listed in the system console.
+In **Rig Updater > Check**, you can check mesh weights and action channels.
+**Check Meshes Weights (Active)** and **Check Action (Active)** check the active
+armature. **Check Meshes Weights (All)** and **Check Actions (All)** check every
+armature in the scene. Results are listed in the system console.
 
 ## Configuration Json.
 
