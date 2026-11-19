@@ -23,6 +23,7 @@ class RigControllerUpdateTask:
     description: str
     replace_operations: List[RigControllerReplaceOperation]
     remove_operations: List[RemovalOperation]
+    action_search: str = "all_actions"
 
 
 @dataclasses.dataclass(frozen=True)

@@ -17,7 +17,10 @@ You have two buttons:
 
 - And the `Update Rig Backward Compatibility` to update the animation actions for an armature.
 
-In **Rig Updater > Check**, you will find options to do checks and find potential issues with the current rig and mesh skin weights.
+In **Rig Updater > Check**, you can check mesh skin weights and action channels.
+**Check Action (Active)** checks the active armature; **Check Actions (All)**
+checks each armature in the scene using its own rig configuration. Results are
+listed in the system console.
 
 ## Configuration Json.
 
@@ -63,6 +66,7 @@ Rig controller configuration used to update the blender actions:
   "update_tasks": [
     {
       "description": "Update hand controllers.",
+      "action_search": "all_actions",
       "replace_operations": [
         {"old": ["c_Hand_L"], "new": "c_hand_l", "remove_if_already_exists": true},
         {"old": ["c_Index_00_L"], "new": "c_index_metacarpal_l", "remove_if_already_exists": true},
@@ -79,6 +83,19 @@ Rig controller configuration used to update the blender actions:
 }
 
 ```
+
+Each rig update task can select its actions with `action_search`:
+
+- `all_actions`: all actions in the file (`all_action` is also accepted).
+- `used_actions`: the armature's active action and actions in its NLA strips.
+- `revelant_actions`: local actions with matching bones and action slots.
+
+If omitted, `all_actions` preserves the previous behavior. Updates apply each
+task only to its selected local actions, checks inspect the union of selected
+actions, including linked actions.
+
+Checks resolve channels against the target armature or its armature data without
+changing the actions. Slots targeting other data types are reported as skipped.
 
 
 

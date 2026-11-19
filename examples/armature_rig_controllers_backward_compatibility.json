@@ -1,6 +1,7 @@
 {
   "update_tasks": [
     {
+      "action_search": "all_action",
       "description": "Update left-hand controllers.",
       "replace_operations": [
         {"old": ["c_Hand_L"], "new": "c_hand_l", "remove_if_already_exists": true},
