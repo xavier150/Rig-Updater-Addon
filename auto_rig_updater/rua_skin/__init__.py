@@ -11,9 +11,12 @@ import importlib
 
 import bpy
 
-from . import rua_skin_class
+from . import rua_skin_type
 from . import rua_skin_utils
+from . import rua_skin_class
 
+if "rua_skin_type" in locals():
+    importlib.reload(rua_skin_type)
 if "rua_skin_utils" in locals():
     importlib.reload(rua_skin_utils)
 if "rua_skin_class" in locals():

@@ -14,10 +14,12 @@ try:
     from . import bbpl
     from . import bpl
     from . import config
-    from . import rua_action
+    from . import rua_json_utils
     from . import rua_armature
-    from . import rua_check
+    from . import rua_rig
     from . import rua_skin
+    from . import rua_action
+    from . import rua_check
     from . import rua_ui
 
     if "bpl" in locals():
@@ -26,8 +28,12 @@ try:
         importlib.reload(bbpl)
     if "config" in locals():
         importlib.reload(config)
+    if "rua_json_utils" in locals():
+        importlib.reload(rua_json_utils)
     if "rua_armature" in locals():
         importlib.reload(rua_armature)
+    if "rua_rig" in locals():
+        importlib.reload(rua_rig)
     if "rua_skin" in locals():
         importlib.reload(rua_skin)
     if "rua_action" in locals():
@@ -56,6 +62,7 @@ try:
 
             bbpl.register()
             rua_armature.register()
+            rua_rig.register()
             rua_skin.register()
             rua_action.register()
             rua_check.register()
@@ -75,6 +82,7 @@ try:
             rua_check.unregister()
             rua_action.unregister()
             rua_skin.unregister()
+            rua_rig.unregister()
             rua_armature.unregister()
             bbpl.unregister()
 

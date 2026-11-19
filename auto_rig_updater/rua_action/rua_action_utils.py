@@ -10,7 +10,7 @@
 import bpy
 
 from .. import bbpl
-from .. import rua_armature
+from .. import rua_rig
 
 
 def _controller_data_path(name: str) -> str:
@@ -18,7 +18,7 @@ def _controller_data_path(name: str) -> str:
 
 
 def update_action_backward_compatibility(
-    configuration: rua_armature.rua_armature_type.RigControllersBackwardCompatibility,
+    configuration: rua_rig.rua_rig_type.RigControllersBackwardCompatibility,
     print_log: bool = False,
 ) -> None:
     rig_updater = bbpl.backward_compatibility.rig_action_updater.RigActionUpdater()

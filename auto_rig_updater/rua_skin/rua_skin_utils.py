@@ -12,7 +12,27 @@ from typing import List
 import bpy
 
 from .. import bbpl
-from .. import rua_armature
+from .. import rua_json_utils
+from . import rua_skin_type
+
+
+def _parse_mesh_operation(item: object, location: str) -> rua_skin_type.MeshWeightReplaceOperation:
+    operation = rua_json_utils.require_dict(item, location, {"old", "new", "conflit_resolution"})
+    old_names = rua_json_utils.parse_old_names(operation["old"], f"{location}.old")
+    new_name = rua_json_utils.parse_new_name(operation["new"], f"{location}.new")
+    resolution = operation["conflit_resolution"]
+    options = bbpl.backward_compatibility.skin_weight_mesh_updater.CONFLIT_RESOLUTIONS
+    if not isinstance(resolution, str) or resolution not in options:
+        raise ValueError(f"{location}.conflit_resolution: expected one of {', '.join(options)}.")
+    return rua_skin_type.MeshWeightReplaceOperation(old_names, new_name, resolution)
+
+
+def load_mesh_weight_backward_compatibility(filepath: str) -> rua_skin_type.MeshWeightBackwardCompatibility:
+    return rua_skin_type.MeshWeightBackwardCompatibility(rua_json_utils.parse_update_tasks(
+        rua_json_utils.load_document(filepath), _parse_mesh_operation,
+        rua_skin_type.RemovalOperation, rua_skin_type.MeshWeightUpdateTask,
+    ))
+
 
 def get_armature_children_meshes(armature: bpy.types.Object) -> List[bpy.types.Object]:
     if not isinstance(armature.data, bpy.types.Armature):
@@ -21,7 +41,7 @@ def get_armature_children_meshes(armature: bpy.types.Object) -> List[bpy.types.O
 
 def update_mesh_skin_weight_backward_compatibility(
     objects: List[bpy.types.Object],
-    configuration: rua_armature.rua_armature_type.MeshWeightBackwardCompatibility,
+    configuration: rua_skin_type.MeshWeightBackwardCompatibility,
     print_log: bool = False,
 ) -> None:
     skin_updater = bbpl.backward_compatibility.skin_weight_mesh_updater.SkinWeightMeshUpdater()
@@ -33,21 +53,9 @@ def update_mesh_skin_weight_backward_compatibility(
         if obj.type == "MESH":
             for task in configuration.update_tasks:
                 for operation in task.replace_operations:
-                    for old_name in operation.old:
-                        if old_name == operation.new:
-                            continue
-                        old_group = obj.vertex_groups.get(old_name)
-                        if old_group is None:
-                            continue
-                        if obj.vertex_groups.get(operation.new) is not None:
-                            if operation.remove_if_already_exists:
-                                obj.vertex_groups.remove(old_group)
-                                skin_updater.remove_weights += 1
-                                print(f'"{old_name}" removed from "{obj.name}"; keeping "{operation.new}".')
-                            else:
-                                print(f'Warning; Mesh "{obj.name}" already has Group "{operation.new}"; keeping "{old_name}".')
-                            continue
-                        skin_updater.update_mesh_skin_weight(obj, [old_name], operation.new)
+                    skin_updater.update_mesh_skin_weight(
+                        obj, operation.old, operation.new, conflit_resolution=operation.conflit_resolution,
+                    )
                 for operation in task.remove_operations:
                     for old_name in operation.old:
                         group = obj.vertex_groups.get(old_name)

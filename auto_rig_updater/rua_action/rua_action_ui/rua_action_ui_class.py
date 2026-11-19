@@ -16,6 +16,8 @@ if TYPE_CHECKING:
 
 from ... import bpl
 from ... import rua_armature
+from ... import rua_json_utils
+from ... import rua_rig
 from .. import rua_action_utils
 
 
@@ -34,12 +36,12 @@ class RUA_OT_UpdateRigBackwardCompatibility(bpy.types.Operator):
             obj,
             rua_armature.rua_armature_props.get_object_armature_rig_controllers_backward_compatibility(obj),
         )
-        error = rua_armature.rua_armature_utils.get_config_file_error(filepath)
+        error = rua_json_utils.get_config_file_error(filepath)
         if error is not None:
             print(bpl.color_set.yellow(f"[Rig Updater] Warning: {error}"))
             self.report({'WARNING'}, error)
             return {'CANCELLED'}
-        configuration = rua_armature.rua_armature_utils.load_rig_controllers_backward_compatibility(filepath)
+        configuration = rua_rig.rua_rig_utils.load_rig_controllers_backward_compatibility(filepath)
         rua_action_utils.update_action_backward_compatibility(configuration)
         return {'FINISHED'}
 

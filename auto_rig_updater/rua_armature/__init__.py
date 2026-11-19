@@ -13,12 +13,9 @@ import bpy
 
 from . import rua_armature_class
 from . import rua_armature_props
-from . import rua_armature_type
 from . import rua_armature_ui
 from . import rua_armature_utils
 
-if "rua_armature_type" in locals():
-    importlib.reload(rua_armature_type)
 if "rua_armature_props" in locals():
     importlib.reload(rua_armature_props)
 if "rua_armature_utils" in locals():

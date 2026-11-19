@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 
 from .. import bpl
 from .. import rua_armature
+from .. import rua_json_utils
 from . import rua_skin_utils
 
 
@@ -116,12 +117,12 @@ class RUA_OT_UpdateMeshWeightBackwardCompatibility(bpy.types.Operator):
             obj,
             rua_armature.rua_armature_props.get_object_armature_mesh_weight_backward_compatibility(obj),
         )
-        error = rua_armature.rua_armature_utils.get_config_file_error(filepath)
+        error = rua_json_utils.get_config_file_error(filepath)
         if error is not None:
             print(bpl.color_set.yellow(f"[Rig Updater] Warning: {error}"))
             self.report({'WARNING'}, error)
             return {'CANCELLED'}
-        configuration = rua_armature.rua_armature_utils.load_mesh_weight_backward_compatibility(filepath)
+        configuration = rua_skin_utils.load_mesh_weight_backward_compatibility(filepath)
         rua_skin_utils.update_mesh_skin_weight_backward_compatibility(objects, configuration)
         return {'FINISHED'}
 

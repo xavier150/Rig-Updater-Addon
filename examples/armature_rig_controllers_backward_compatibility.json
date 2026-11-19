@@ -25,7 +25,9 @@
         {"old": ["c_Ring_03_L"], "new": "c_ring_03_l", "remove_if_already_exists": true},
         {"old": ["c_Ring_04_L"], "new": "c_ring_claw_l", "remove_if_already_exists": true}
       ],
-      "remove_operations": []
+      "remove_operations": [
+        {"old": ["c_old_bone"]}
+      ]
     }
   ]
 }
