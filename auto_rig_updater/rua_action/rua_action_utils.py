@@ -136,16 +136,17 @@ def update_action_backward_compatibility(
             if action.library:
                 continue
             print(f"Updating action: {action.name}")
-            for operation in task.replace_operations:
-                rig_updater.update_action_curve_data_path(
-                    action,
-                    [_controller_data_path(name) for name in operation.old],
-                    _controller_data_path(operation.new),
-                    operation.remove_if_already_exists,
-                )
-            for operation in task.remove_operations:
-                rig_updater.remove_action_curve_by_data_path(
-                    action, [_controller_data_path(name) for name in operation.old],
-                )
+            for section in task.sections:
+                is_channel = section.target == "channel"
+                for operation in section.operations:
+                    old_paths = operation.old if is_channel else [_controller_data_path(name) for name in operation.old]
+                    if isinstance(operation, rua_rig.rua_rig_type.RigControllerReplaceOperation):
+                        new_path = operation.new if is_channel else _controller_data_path(operation.new)
+                        rig_updater.update_action_curve_data_path(
+                            action, old_paths, new_path,
+                            conflit_resolution=operation.conflit_resolution, exact_match=is_channel,
+                        )
+                    else:
+                        rig_updater.remove_action_curve_by_data_path(action, old_paths, exact_match=is_channel)
 
     rig_updater.print_update_log()

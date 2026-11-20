@@ -66,16 +66,22 @@ Rig controller configuration used to update the blender actions:
   "update_tasks": [
     {
       "description": "Update hand controllers.",
-      "action_search": "all_actions",
-      "replace_operations": [
-        {"old": ["c_Hand_L"], "new": "c_hand_l", "remove_if_already_exists": true},
-        {"old": ["c_Index_00_L"], "new": "c_index_metacarpal_l", "remove_if_already_exists": true},
-        {"old": ["c_Index_01_L"], "new": "c_index_01_l", "remove_if_already_exists": true},
-        {"old": ["c_Index_02_L"], "new": "c_index_02_l", "remove_if_already_exists": true},
-        {"old": ["c_Index_03_L"], "new": "c_index_03_l", "remove_if_already_exists": true},
-        {"old": ["c_Index_04_L"], "new": "c_index_claw_l", "remove_if_already_exists": true}
+      "action_search": "revelant_actions",
+      "replace_channel_operations": [
+        {"old": ["pose.bones[\"Ik_Hand_L\"][\"IkBlend\"]"], "new": "pose.bones[\"ik_hand_l\"][\"ik_blend\"]", "conflit_resolution": "remove_old"}
       ],
-      "remove_operations": [
+      "remove_channel_operations": [
+        {"old": ["pose.bones[\"Ik_Hand_L\"][\"old_property\"]"]}
+      ],
+      "replace_bone_operations": [
+        {"old": ["c_Hand_L"], "new": "c_hand_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Index_00_L"], "new": "c_index_metacarpal_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Index_01_L"], "new": "c_index_01_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Index_02_L"], "new": "c_index_02_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Index_03_L"], "new": "c_index_03_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Index_04_L"], "new": "c_index_claw_l", "conflit_resolution": "remove_old"}
+      ],
+      "remove_bone_operations": [
         {"old": ["c_Layer_Body"]}
       ]
     }
@@ -84,19 +90,29 @@ Rig controller configuration used to update the blender actions:
 
 ```
 
-Each rig update task can select its actions with `action_search`:
+Operations are applied in the order their sections appear in the JSON. It is
+recommended to place `replace_channel_operations` before `replace_bone_operations`
+so channel paths still match the old bone names. Channel operations match full
+data paths, while bone operations apply to all channels of the named bone.
+
+Each rig update task must select its actions with `action_search`:
 
 - `all_actions`: all actions in the file (`all_action` is also accepted).
 - `used_actions`: the armature's active action and actions in its NLA strips.
 - `revelant_actions`: local actions with matching bones and action slots.
 
-If omitted, `all_actions` preserves the previous behavior. Updates apply each
-task only to its selected local actions, checks inspect the union of selected
-actions, including linked actions.
+Updates apply each task only to its selected local actions, checks inspect the
+union of selected actions, including linked actions.
 
 Checks resolve channels against the target armature or its armature data without
 changing the actions. Slots targeting other data types are reported as skipped.
 
+For action updates, `conflit_resolution` controls what happens when the new
+channel already exists for the same array index and slot:
+
+- `keep_both`: leave both channels unchanged.
+- `remove_old`: remove the old channel and keep the new channel.
+- `remove_new`: remove the new channel and replace it with the old channel's values.
 
 
 ## Additional Notes

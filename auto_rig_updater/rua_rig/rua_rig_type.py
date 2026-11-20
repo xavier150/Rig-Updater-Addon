@@ -3,14 +3,14 @@
 # SPDX-License-Identifier: MIT
 
 import dataclasses
-from typing import List
+from typing import List, Union
 
 
 @dataclasses.dataclass(frozen=True)
 class RigControllerReplaceOperation:
     old: List[str]
     new: str
-    remove_if_already_exists: bool
+    conflit_resolution: str
 
 
 @dataclasses.dataclass(frozen=True)
@@ -19,11 +19,22 @@ class RemovalOperation:
 
 
 @dataclasses.dataclass(frozen=True)
+class ReplaceSection:
+    target: str
+    operations: List[RigControllerReplaceOperation]
+
+
+@dataclasses.dataclass(frozen=True)
+class RemoveSection:
+    target: str
+    operations: List[RemovalOperation]
+
+
+@dataclasses.dataclass(frozen=True)
 class RigControllerUpdateTask:
     description: str
-    replace_operations: List[RigControllerReplaceOperation]
-    remove_operations: List[RemovalOperation]
-    action_search: str = "all_actions"
+    sections: List[Union[ReplaceSection, RemoveSection]]
+    action_search: str
 
 
 @dataclasses.dataclass(frozen=True)

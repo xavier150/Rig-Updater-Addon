@@ -1,32 +1,39 @@
 {
   "update_tasks": [
     {
-      "action_search": "all_action",
       "description": "Update left-hand controllers.",
-      "replace_operations": [
-        {"old": ["c_Hand_L"], "new": "c_hand_l", "remove_if_already_exists": true},
-        {"old": ["c_Index_00_L"], "new": "c_index_metacarpal_l", "remove_if_already_exists": true},
-        {"old": ["c_Index_01_L"], "new": "c_index_01_l", "remove_if_already_exists": true},
-        {"old": ["c_Index_02_L"], "new": "c_index_02_l", "remove_if_already_exists": true},
-        {"old": ["c_Index_03_L"], "new": "c_index_03_l", "remove_if_already_exists": true},
-        {"old": ["c_Index_04_L"], "new": "c_index_claw_l", "remove_if_already_exists": true},
-        {"old": ["c_Middle_00_L"], "new": "c_middle_metacarpal_l", "remove_if_already_exists": true},
-        {"old": ["c_Middle_01_L"], "new": "c_middle_01_l", "remove_if_already_exists": true},
-        {"old": ["c_Middle_02_L"], "new": "c_middle_02_l", "remove_if_already_exists": true},
-        {"old": ["c_Middle_03_L"], "new": "c_middle_03_l", "remove_if_already_exists": true},
-        {"old": ["c_Middle_04_L"], "new": "c_middle_claw_l", "remove_if_already_exists": true},
-        {"old": ["c_Pinky_00_L"], "new": "c_pinky_metacarpal_l", "remove_if_already_exists": true},
-        {"old": ["c_Pinky_01_L"], "new": "c_pinky_01_l", "remove_if_already_exists": true},
-        {"old": ["c_Pinky_02_L"], "new": "c_pinky_02_l", "remove_if_already_exists": true},
-        {"old": ["c_Pinky_03_L"], "new": "c_pinky_03_l", "remove_if_already_exists": true},
-        {"old": ["c_Pinky_04_L"], "new": "c_pinky_claw_l", "remove_if_already_exists": true},
-        {"old": ["c_Ring_00_L"], "new": "c_ring_metacarpal_l", "remove_if_already_exists": true},
-        {"old": ["c_Ring_01_L"], "new": "c_ring_01_l", "remove_if_already_exists": true},
-        {"old": ["c_Ring_02_L"], "new": "c_ring_02_l", "remove_if_already_exists": true},
-        {"old": ["c_Ring_03_L"], "new": "c_ring_03_l", "remove_if_already_exists": true},
-        {"old": ["c_Ring_04_L"], "new": "c_ring_claw_l", "remove_if_already_exists": true}
+      "action_search": "revelant_actions",
+      "replace_channel_operations": [
+        {"old": ["pose.bones[\"Ik_Hand_L\"][\"IkBlend\"]"], "new": "pose.bones[\"ik_hand_l\"][\"ik_blend\"]", "conflit_resolution": "remove_old"}
       ],
-      "remove_operations": [
+      "remove_channel_operations": [
+        {"old": ["pose.bones[\"Ik_Hand_L\"][\"old_property\"]"]}
+      ],
+      "replace_bone_operations": [
+        {"old": ["Ik_Hand_L"], "new": "ik_hand_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Hand_L"], "new": "c_hand_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Index_00_L"], "new": "c_index_metacarpal_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Index_01_L"], "new": "c_index_01_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Index_02_L"], "new": "c_index_02_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Index_03_L"], "new": "c_index_03_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Index_04_L"], "new": "c_index_claw_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Middle_00_L"], "new": "c_middle_metacarpal_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Middle_01_L"], "new": "c_middle_01_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Middle_02_L"], "new": "c_middle_02_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Middle_03_L"], "new": "c_middle_03_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Middle_04_L"], "new": "c_middle_claw_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Pinky_00_L"], "new": "c_pinky_metacarpal_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Pinky_01_L"], "new": "c_pinky_01_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Pinky_02_L"], "new": "c_pinky_02_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Pinky_03_L"], "new": "c_pinky_03_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Pinky_04_L"], "new": "c_pinky_claw_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Ring_00_L"], "new": "c_ring_metacarpal_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Ring_01_L"], "new": "c_ring_01_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Ring_02_L"], "new": "c_ring_02_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Ring_03_L"], "new": "c_ring_03_l", "conflit_resolution": "remove_old"},
+        {"old": ["c_Ring_04_L"], "new": "c_ring_claw_l", "conflit_resolution": "remove_old"}
+      ],
+      "remove_bone_operations": [
         {"old": ["c_old_bone"]}
       ]
     }

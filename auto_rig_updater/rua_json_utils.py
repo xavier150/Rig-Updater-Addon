@@ -77,20 +77,32 @@ def parse_task_operations(
     description = task["description"]
     if not isinstance(description, str):
         raise ValueError(f"{location}.description: expected a string.")
-    replacements = [
-        parse_operation(operation, f"{location}.replace_operations[{operation_index}]")
+    replacements = parse_replacements(task["replace_operations"], f"{location}.replace_operations", parse_operation)
+    removals = parse_removals(task["remove_operations"], f"{location}.remove_operations", removal_type)
+    return description, replacements, removals
+
+
+def parse_replacements(
+    value: object, location: str, parse_operation: Callable[[object, str], _Operation],
+) -> List[_Operation]:
+    return [
+        parse_operation(operation, f"{location}[{operation_index}]")
         for operation_index, operation in enumerate(
-            require_list(task["replace_operations"], f"{location}.replace_operations")
+            require_list(value, location)
         )
     ]
+
+
+def parse_removals(
+    value: object, location: str, removal_type: Callable[[List[str]], _Removal],
+) -> List[_Removal]:
     removals: List[_Removal] = []
-    removal_location = f"{location}.remove_operations"
-    for removal_index, item in enumerate(require_list(task["remove_operations"], removal_location)):
-        item_location = f"{removal_location}[{removal_index}]"
+    for removal_index, item in enumerate(require_list(value, location)):
+        item_location = f"{location}[{removal_index}]"
         operation = require_dict(item, item_location, {"old"})
         old_names = parse_old_names(operation["old"], f"{item_location}.old")
         removals.append(removal_type(old_names))
-    return description, replacements, removals
+    return removals
 
 
 def load_document(filepath: str) -> object:
