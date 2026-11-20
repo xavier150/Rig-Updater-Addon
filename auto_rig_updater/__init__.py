@@ -15,6 +15,7 @@ try:
     from . import bpl
     from . import config
     from . import rua_json_utils
+    from . import rua_scene
     from . import rua_armature
     from . import rua_rig
     from . import rua_skin
@@ -30,6 +31,8 @@ try:
         importlib.reload(config)
     if "rua_json_utils" in locals():
         importlib.reload(rua_json_utils)
+    if "rua_scene" in locals():
+        importlib.reload(rua_scene)
     if "rua_armature" in locals():
         importlib.reload(rua_armature)
     if "rua_rig" in locals():
@@ -61,6 +64,7 @@ try:
                 bpy.utils.register_class(cls)
 
             bbpl.register()
+            rua_scene.register()
             rua_armature.register()
             rua_rig.register()
             rua_skin.register()
@@ -84,6 +88,7 @@ try:
             rua_skin.unregister()
             rua_rig.unregister()
             rua_armature.unregister()
+            rua_scene.unregister()
             bbpl.unregister()
 
             for cls in reversed(classes):

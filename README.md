@@ -9,9 +9,11 @@ In the 3D View sidebar, open **Rig Updater > Config**:
 Here you will be able to setup Json configuration to define how the addon updates rigs and mesh skin weights.
 You can found example json files in the `examples` folder of this repository.
 
-In **Rig Updater > Actions**, you will find buttons to update the meshes skin weights and animation actions for backward compatibility.
+In **Rig Updater > Actions**, you will find buttons to update scene libraries,
+scene unit scale, mesh skin weights and animation actions for backward compatibility.
 
-You have two buttons:
+- The `Update Scene Libraries` button relocates linked `.blend` libraries using the scene rules.
+- The `Update Scene Scale` button updates the scene unit scale without resizing objects.
 - The `Update Mesh Weights` button updates the weights of an armature's meshes.
 <img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/skin/update_mesh_skin_weight_result.webp" alt="Update Mesh Skin Weight Result" width="auto" height="80%">
 
@@ -23,6 +25,30 @@ armature. **Check Meshes Weights (All)** and **Check Actions (All)** check every
 armature in the scene. Results are listed in the system console.
 
 ## Configuration Json.
+
+Set **Scene Rules JSON** in Config to use the scene rules example in `examples`.
+
+```json
+{
+  "scene_rescale_rules": {
+    "target_unit_scale": 1.0
+  },
+  "libraries_update_rules": {
+    "update_tasks": [
+      {
+        "description": "Update rig library from v3 and v4 to v5.",
+        "old": ["//rig_v3.blend", "//rig_v4.blend"],
+        "new": "//rig_v5.blend"
+      }
+    ]
+  }
+}
+```
+
+Library paths identify `.blend` files. Blender handles data-blocks missing from
+the destination during relocation; potential missing data is reported in the
+system console. Library updates affect the whole Blender file.
+Libraries referenced by another linked library must be updated in their parent file.
 
 Weight mesh configuration used to update the skinning of mesh objects:
 ```json

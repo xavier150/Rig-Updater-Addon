@@ -1,0 +1,17 @@
+{
+  "scene_rescale_rules": {
+    "target_unit_scale": 1.0
+  },
+  "libraries_update_rules": {
+    "update_tasks": [
+      {
+        "description": "Update Cobble_Character (v3 and v4 to v5)",
+          "old": [
+            "M:\\MMVS_ProjectFiles_v2\\SourceAssets\\Characters\\Cobble_Character\\Rig\\v3\\Cobble_Character.blend",
+            "M:\\MMVS_ProjectFiles_v2\\SourceAssets\\Characters\\Cobble_Character\\Rig\\v4\\Cobble_Character.blend"
+          ],
+          "new": "M:\\MMVS_ProjectFiles_v2\\SourceAssets\\Characters\\Cobble_Character\\Rig\\v5\\Cobble_Character.blend"
+      }
+    ]
+  }
+}

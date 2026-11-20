@@ -17,5 +17,7 @@ def draw(layout: bpy.types.UILayout, context: bpy.types.Context) -> None:
     if accordion:
         _, panel = accordion.draw(layout)
         if panel:
+            panel.operator("rua.update_scene_libraries")
+            panel.operator("rua.update_scene_scale")
             panel.operator("rua.update_meshes_weights_backward_compatibility")
             panel.operator("rua.update_actions_backward_compatibility")

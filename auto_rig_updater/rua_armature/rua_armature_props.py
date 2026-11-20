@@ -7,6 +7,10 @@
 #  https://github.com/xavier150/Rig-Updater-Addon
 # ----------------------------------------------
 
+from typing import TYPE_CHECKING, Set
+if TYPE_CHECKING:
+    from typing import Literal
+
 import bpy
 
 
@@ -37,6 +41,9 @@ def register() -> None:
     for cls in classes:
         bpy.utils.register_class(cls)
 
+    options: "Set[Literal['PATH_SUPPORTS_BLEND_RELATIVE']]" = (
+        {'PATH_SUPPORTS_BLEND_RELATIVE'} if bpy.app.version >= (4, 5, 0) else set()
+    )
     setattr(
         bpy.types.Object,
         "rua_armature_mesh_weight_backward_compatibility",
@@ -44,7 +51,7 @@ def register() -> None:
             name="Mesh Weights JSON",
             description="JSON migration rules for this armature's mesh vertex groups",
             subtype='FILE_PATH',
-            options={'PATH_SUPPORTS_BLEND_RELATIVE'},
+            options=options,  # type: ignore
             default="",
         ),
     )
@@ -55,7 +62,7 @@ def register() -> None:
             name="Rig Controllers JSON",
             description="JSON migration rules for animation FCurve data paths",
             subtype='FILE_PATH',
-            options={'PATH_SUPPORTS_BLEND_RELATIVE'},
+            options=options,  # type: ignore
             default="",
         ),
     )
