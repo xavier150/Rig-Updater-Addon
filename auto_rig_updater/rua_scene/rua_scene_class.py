@@ -34,7 +34,7 @@ class RUA_OT_UpdateSceneLibraries(bpy.types.Operator):
         warnings: List[str] = []
         count = rua_scene_lib_utils.update_scene_libraries(configuration, warning_callback=warnings.append)
         if warnings:
-            self.report({'WARNING'}, f"Updated {count} libraries; some data-blocks were not found. See the system console.")
+            self.report({'WARNING'}, f"Updated {count} libraries with warnings. See the system console.")
         else:
             self.report({'INFO'}, f"Updated {count} libraries.")
         return {'FINISHED'}

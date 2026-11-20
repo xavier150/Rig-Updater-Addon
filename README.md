@@ -65,6 +65,10 @@ It does not move camera objects.
 Library paths identify `.blend` files. Blender handles data-blocks missing from
 the destination during relocation; potential missing data is reported in the
 system console. Library updates affect the whole Blender file.
+After each relocation, Make Library Override is run again on objects that were
+already editable overrides of that library. System overrides are not explicitly targeted.
+If Blender does not allow refreshing an override, the library remains relocated
+and a warning is reported.
 Libraries referenced by another linked library must be updated in their parent file.
 
 Weight mesh configuration used to update the skinning of mesh objects:
