@@ -9,6 +9,9 @@ from typing import List
 @dataclasses.dataclass(frozen=True)
 class SceneRescaleRules:
     target_unit_scale: float
+    scale_object_position: bool
+    scale_animation_location_channels: bool
+    scale_rig: bool
 
 
 @dataclasses.dataclass(frozen=True)

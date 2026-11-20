@@ -3,11 +3,11 @@
 # SPDX-License-Identifier: MIT
 
 import math
-from typing import Optional, Tuple
+from typing import Dict, Optional, Tuple
 
 import bpy
 
-from .. import rua_json_utils
+from .. import bbpl, rua_json_utils
 from . import rua_scene_props
 from . import rua_scene_type
 from .rua_scene_lib import rua_scene_lib_utils
@@ -18,7 +18,8 @@ def load_scene_rules_backward_compatibility(filepath: str) -> rua_scene_type.Sce
         rua_json_utils.load_document(filepath), "JSON", {"scene_rescale_rules", "libraries_update_rules"},
     )
     scale_rules = rua_json_utils.require_dict(
-        document["scene_rescale_rules"], "scene_rescale_rules", {"target_unit_scale"},
+        document["scene_rescale_rules"], "scene_rescale_rules",
+        {"target_unit_scale", "scale_object_position", "scale_animation_location_channels", "scale_rig"},
     )
     scale = scale_rules["target_unit_scale"]
     scale_property = bpy.types.UnitSettings.bl_rna.properties["scale_length"]
@@ -30,9 +31,18 @@ def load_scene_rules_backward_compatibility(filepath: str) -> rua_scene_type.Sce
             f"scene_rescale_rules.target_unit_scale: expected a finite number between "
             f"{scale_property.hard_min} and {scale_property.hard_max}." # type: ignore
         )
+    scale_options: Dict[str, bool] = {}
+    for name in ("scale_object_position", "scale_animation_location_channels", "scale_rig"):
+        value = scale_rules[name]
+        if not isinstance(value, bool):
+            raise ValueError(f"scene_rescale_rules.{name}: expected a boolean.")
+        scale_options[name] = value
     tasks = rua_scene_lib_utils.parse_libraries_update_rules(document["libraries_update_rules"])
     return rua_scene_type.SceneRulesBackwardCompatibility(
-        rua_scene_type.SceneRescaleRules(float(scale)), tasks,
+        rua_scene_type.SceneRescaleRules(
+            float(scale), scale_options["scale_object_position"],
+            scale_options["scale_animation_location_channels"], scale_options["scale_rig"],
+        ), tasks,
     )
 
 
@@ -47,5 +57,23 @@ def load_scene_configuration(
 
 
 def update_scene_scale(scene: bpy.types.Scene, configuration: rua_scene_type.SceneRulesBackwardCompatibility) -> None:
-    if scene.unit_settings:
-        scene.unit_settings.scale_length = configuration.scene_rescale_rules.target_unit_scale
+    unit_settings = scene.unit_settings
+    if unit_settings is None:
+        raise RuntimeError("Scene unit settings are unavailable.")
+    rules = configuration.scene_rescale_rules
+    scale_factor = unit_settings.scale_length / rules.target_unit_scale
+    # Blender stores the unit scale as a single-precision float.
+    if not math.isclose(scale_factor, 1.0, rel_tol=1e-7):
+        objects = list(scene.objects)
+        if rules.scale_object_position and objects:
+            bbpl.scene.scale_utils.scale_objects(
+                scale_factor, use_location=True, use_scale=False,
+                white_list=objects, scene_only=False,
+            )
+        if rules.scale_animation_location_channels:
+            bbpl.scene.scale_utils.scale_animations(scale_factor)
+        if rules.scale_rig and objects:
+            bbpl.scene.scale_utils.scale_rigs_data(
+                scale_factor, white_list=objects, scene_only=False,
+            )
+    unit_settings.scale_length = rules.target_unit_scale

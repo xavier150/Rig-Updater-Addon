@@ -13,7 +13,7 @@ In **Rig Updater > Actions**, you will find buttons to update scene libraries,
 scene unit scale, mesh skin weights and animation actions for backward compatibility.
 
 - The `Update Scene Libraries` button relocates linked `.blend` libraries using the scene rules.
-- The `Update Scene Scale` button updates the scene unit scale without resizing objects.
+- The `Update Scene Scale` button updates the scene unit scale and optionally rescales object positions, animation location channels and rig data.
 - The `Update Mesh Weights` button updates the weights of an armature's meshes.
 <img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/skin/update_mesh_skin_weight_result.webp" alt="Update Mesh Skin Weight Result" width="auto" height="80%">
 
@@ -31,7 +31,10 @@ Set **Scene Rules JSON** in Config to use the scene rules example in `examples`.
 ```json
 {
   "scene_rescale_rules": {
-    "target_unit_scale": 1.0
+    "target_unit_scale": 1.0,
+    "scale_object_position": true,
+    "scale_animation_location_channels": true,
+    "scale_rig": false
   },
   "libraries_update_rules": {
     "update_tasks": [
@@ -44,6 +47,12 @@ Set **Scene Rules JSON** in Config to use the scene rules example in `examples`.
   }
 }
 ```
+
+The three rescale options are required booleans; set them to `false` to change only
+the unit scale. Enabled data is multiplied by the old unit scale divided by the
+target unit scale. Object positions and rig data are limited to the current scene;
+animation location channels are updated in all actions in the file. Object scale
+is unchanged.
 
 Library paths identify `.blend` files. Blender handles data-blocks missing from
 the destination during relocation; potential missing data is reported in the
