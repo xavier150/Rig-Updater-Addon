@@ -12,6 +12,7 @@ class SceneRescaleRules:
     scale_object_position: bool
     scale_animation_location_channels: bool
     scale_rig: bool
+    scale_user_view: bool
 
 
 @dataclasses.dataclass(frozen=True)

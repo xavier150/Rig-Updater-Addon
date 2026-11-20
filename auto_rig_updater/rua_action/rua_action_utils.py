@@ -29,6 +29,7 @@ def load_armature_configuration(
 ) -> Tuple[Optional[rua_rig.rua_rig_type.RigControllersBackwardCompatibility], Optional[str]]:
     filepath = rua_armature.rua_armature_utils.get_config_filepath(
         armature, rua_armature.rua_armature_props.get_object_armature_rig_controllers_backward_compatibility(armature),
+        property_name="rua_armature_rig_controllers_backward_compatibility",
     )
     error = rua_json_utils.get_config_file_error(filepath)
     if error is not None:

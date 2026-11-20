@@ -152,6 +152,7 @@ class RUA_OT_UpdateMeshesWeightsBackwardCompatibility(bpy.types.Operator):
         filepath = rua_armature.rua_armature_utils.get_config_filepath(
             obj,
             rua_armature.rua_armature_props.get_object_armature_mesh_weight_backward_compatibility(obj),
+            property_name="rua_armature_mesh_weight_backward_compatibility",
         )
         error = rua_json_utils.get_config_file_error(filepath)
         if error is not None:

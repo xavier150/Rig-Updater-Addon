@@ -3,7 +3,8 @@
     "target_unit_scale": 1.0,
     "scale_object_position": true,
     "scale_animation_location_channels": true,
-    "scale_rig": false
+    "scale_rig": false,
+    "scale_user_view": true
   },
   "libraries_update_rules": {
     "update_tasks": [
