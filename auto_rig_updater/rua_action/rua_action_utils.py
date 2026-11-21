@@ -39,14 +39,17 @@ def load_armature_configuration(
 
 def get_actions_for_search(armature: Optional[bpy.types.Object], action_search: str) -> List[bpy.types.Action]:
     if action_search == "all_actions":
-        return list(bpy.data.actions)
-    if armature is None or not isinstance(armature.data, bpy.types.Armature):
-        raise ValueError(f"An armature is required for action search '{action_search}'.")
-    if action_search == "used_actions":
-        return bbpl.action.action_utils.get_used_actions(armature)
-    if action_search == "revelant_actions":
-        return bbpl.action.action_utils.get_relevant_actions([armature])
-    raise ValueError(f"Unknown action search: {action_search!r}.")
+        actions = list(bpy.data.actions)
+    else:
+        if armature is None or not isinstance(armature.data, bpy.types.Armature):
+            raise ValueError(f"An armature is required for action search '{action_search}'.")
+        if action_search == "used_actions":
+            actions = bbpl.action.action_utils.get_used_actions(armature)
+        elif action_search == "revelant_actions":
+            actions = bbpl.action.action_utils.get_relevant_actions([armature])
+        else:
+            raise ValueError(f"Unknown action search: {action_search!r}.")
+    return [action for action in actions if action.library is None]
 
 
 def get_configured_actions(

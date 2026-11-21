@@ -75,7 +75,8 @@ def update_scene_scale(scene: bpy.types.Scene, configuration: rua_scene_type.Sce
                 white_list=objects, scene_only=False,
             )
         if rules.scale_animation_location_channels:
-            bbpl.scene.scale_utils.scale_animations(scale_factor)
+            linked_actions = [action for action in bpy.data.actions if action.library is not None]
+            bbpl.scene.scale_utils.scale_animations(scale_factor, black_list=linked_actions)
         if rules.scale_rig and objects:
             bbpl.scene.scale_utils.scale_rigs_data(
                 scale_factor, white_list=objects, scene_only=False,
