@@ -16,7 +16,7 @@ override are resolved from the current `.blend` file.
 In **Rig Updater > Actions**, you will find buttons to update scene libraries,
 scene unit scale, mesh skin weights and animation actions for backward compatibility.
 
-- The `Update Scene Libraries` button relocates linked `.blend` libraries using the scene rules.
+- The `Update Scene Libraries` button reloads libraries or relinks collections using the scene rules.
 - The `Update Scene Scale` button updates the scene unit scale and optionally rescales object positions, animation location channels, rig data and viewport settings.
 - The `Update Mesh Weights` button updates the weights of an armature's meshes.
 <img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/skin/update_mesh_skin_weight_result.webp" alt="Update Mesh Skin Weight Result" width="auto" height="80%">
@@ -42,11 +42,20 @@ Set **Scene Rules JSON** in Config to use the scene rules example in `examples`.
     "scale_user_view": true
   },
   "libraries_update_rules": {
-    "update_tasks": [
+    "reload_tasks": [
+      {
+        "description": "Update scenes from v3 and v4 to v5.",
+        "old": ["//scene_v3.blend", "//scene_v4.blend"],
+        "new": "//scene_v5.blend"
+      }
+    ],
+    "collection_relink_tasks": [
       {
         "description": "Update rig library from v3 and v4 to v5.",
         "old": ["//rig_v3.blend", "//rig_v4.blend"],
-        "new": "//rig_v5.blend"
+        "new": "//rig_v5.blend",
+        "old_collection": "my_rig_collection",
+        "new_collection": "my_rig_collection"
       }
     ]
   }
@@ -62,13 +71,14 @@ is unchanged.
 plus the clipping start/end distances, in all saved 3D viewports, including quad views.
 It does not move camera objects.
 
-Library paths identify `.blend` files. Blender handles data-blocks missing from
-the destination during relocation; potential missing data is reported in the
-system console. Library updates affect the whole Blender file.
-After each relocation, Make Library Override is run again on objects that were
-already editable overrides of that library. System overrides are not explicitly targeted.
-If Blender does not allow refreshing an override, the library remains relocated
-and a warning is reported.
+`reload_tasks` relocates libraries and refreshes existing editable object overrides.
+`collection_relink_tasks` replaces collection overrides, restores object animation
+and local constraints, and uses the new rig's Rig Controllers JSON to rename bones
+when restoring constraints. Objects or bones missing from the new collection are
+skipped. Either task list may be omitted. Back up the `.blend` before relinking.
+Collection relinking requires Blender 3.5 or newer. Convert collection instances
+to library overrides before relinking. Local drivers,
+NLA strips other than action clips, and clips with modifiers cannot currently be transferred.
 Libraries referenced by another linked library must be updated in their parent file.
 
 Weight mesh configuration used to update the skinning of mesh objects:

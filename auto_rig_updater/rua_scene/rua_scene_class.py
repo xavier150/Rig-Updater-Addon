@@ -17,7 +17,7 @@ from .rua_scene_lib import rua_scene_lib_utils
 class RUA_OT_UpdateSceneLibraries(bpy.types.Operator):
     bl_idname = "rua.update_scene_libraries"
     bl_label = "Update Scene Libraries"
-    bl_description = "Relocate linked libraries using the scene rules"
+    bl_description = "Reload libraries or relink collections using the scene rules"
 
     def execute(self, context: bpy.types.Context) -> "Set[rna_enums.OperatorReturnItems]":
         scene = context.scene

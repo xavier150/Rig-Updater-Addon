@@ -23,6 +23,18 @@ class LibraryUpdateTask:
 
 
 @dataclasses.dataclass(frozen=True)
+class CollectionRelinkTask(LibraryUpdateTask):
+    old_collection: str
+    new_collection: str
+
+
+@dataclasses.dataclass(frozen=True)
+class LibrariesUpdateRules:
+    reload_tasks: List[LibraryUpdateTask]
+    collection_relink_tasks: List[CollectionRelinkTask]
+
+
+@dataclasses.dataclass(frozen=True)
 class SceneRulesBackwardCompatibility:
     scene_rescale_rules: SceneRescaleRules
-    libraries_update_rules: List[LibraryUpdateTask]
+    libraries_update_rules: LibrariesUpdateRules
