@@ -28,6 +28,7 @@ def load_rig_controllers_backward_compatibility(filepath: str) -> rua_rig_type.R
         optional_keys = {
             "replace_channel_operations", "remove_channel_operations",
             "replace_bone_operations", "remove_bone_operations",
+            "remove_starting_channel_operations",
         }
         keys = {"description", "action_search"}
         if isinstance(item, dict):
@@ -45,7 +46,9 @@ def load_rig_controllers_backward_compatibility(filepath: str) -> rua_rig_type.R
             raise ValueError(f"{location}.action_search: expected all_actions, used_actions, or revelant_actions.")
         if search == "all_action":
             search = "all_actions"
-        sections: List[Union[rua_rig_type.ReplaceSection, rua_rig_type.RemoveSection]] = []
+        sections: List[Union[
+            rua_rig_type.ReplaceSection, rua_rig_type.RemoveSection, rua_rig_type.RemoveStartingChannelSection,
+        ]] = []
         for key, value in task.items():
             if key in ("replace_channel_operations", "replace_bone_operations"):
                 target = "channel" if key == "replace_channel_operations" else "bone"
@@ -57,5 +60,14 @@ def load_rig_controllers_backward_compatibility(filepath: str) -> rua_rig_type.R
                 sections.append(rua_rig_type.RemoveSection(
                     target, rua_json_utils.parse_removals(value, f"{location}.{key}", rua_rig_type.RemovalOperation),
                 ))
+            elif key == "remove_starting_channel_operations":
+                prefixes: List[str] = []
+                for operation_index, item in enumerate(rua_json_utils.require_list(value, f"{location}.{key}")):
+                    operation_location = f"{location}.{key}[{operation_index}]"
+                    operation = rua_json_utils.require_dict(item, operation_location, {"starts_with"})
+                    prefixes.extend(rua_json_utils.parse_old_names(
+                        operation["starts_with"], f"{operation_location}.starts_with",
+                    ))
+                sections.append(rua_rig_type.RemoveStartingChannelSection(prefixes))
         tasks.append(rua_rig_type.RigControllerUpdateTask(description, sections, search))
     return rua_rig_type.RigControllersBackwardCompatibility(tasks)

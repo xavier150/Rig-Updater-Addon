@@ -31,9 +31,14 @@ class RemoveSection:
 
 
 @dataclasses.dataclass(frozen=True)
+class RemoveStartingChannelSection:
+    prefixes: List[str]
+
+
+@dataclasses.dataclass(frozen=True)
 class RigControllerUpdateTask:
     description: str
-    sections: List[Union[ReplaceSection, RemoveSection]]
+    sections: List[Union[ReplaceSection, RemoveSection, RemoveStartingChannelSection]]
     action_search: str
 
 

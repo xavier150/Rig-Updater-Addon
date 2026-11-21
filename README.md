@@ -114,6 +114,9 @@ Rig controller configuration used to update the blender actions:
     {
       "description": "Update hand controllers.",
       "action_search": "revelant_actions",
+      "remove_starting_channel_operations": [
+        {"starts_with": ["pose.bones[\"rp_", "pose.bones[\"rlp_"]}
+      ],
       "replace_channel_operations": [
         {"old": ["pose.bones[\"Ik_Hand_L\"][\"IkBlend\"]"], "new": "pose.bones[\"ik_hand_l\"][\"ik_blend\"]", "conflit_resolution": "remove_old"}
       ],
@@ -141,6 +144,8 @@ Operations are applied in the order their sections appear in the JSON. It is
 recommended to place `replace_channel_operations` before `replace_bone_operations`
 so channel paths still match the old bone names. Channel operations match full
 data paths, while bone operations apply to all channels of the named bone.
+`remove_starting_channel_operations` removes channels whose full data path starts
+with any prefix in the non-empty `starts_with` list; the match is case-sensitive.
 
 Each rig update task must select its actions with `action_search`:
 
@@ -148,8 +153,8 @@ Each rig update task must select its actions with `action_search`:
 - `used_actions`: the armature's active action and actions in its NLA strips.
 - `revelant_actions`: local actions with matching bones and action slots.
 
-Updates apply each task only to its selected local actions, checks inspect the
-union of selected actions, including linked actions.
+Updates apply each task only to its selected local actions; checks inspect the
+union of selected local actions.
 
 Checks resolve channels against the target armature or its armature data without
 changing the actions. Slots targeting other data types are reported as skipped.

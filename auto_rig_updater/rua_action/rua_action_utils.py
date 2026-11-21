@@ -141,6 +141,9 @@ def update_action_backward_compatibility(
                 continue
             print(f"Updating action: {action.name}")
             for section in task.sections:
+                if isinstance(section, rua_rig.rua_rig_type.RemoveStartingChannelSection):
+                    rig_updater.remove_action_curve_by_data_path(action, section.prefixes, starts_with=True)
+                    continue
                 is_channel = section.target == "channel"
                 for operation in section.operations:
                     old_paths = operation.old if is_channel else [_controller_data_path(name) for name in operation.old]

@@ -1,6 +1,14 @@
 {
   "update_tasks": [
     {
+      "description": "Remove animation channels for internal bones.",
+      "action_search": "revelant_actions",
+      "remove_starting_channel_operations": [
+        {"starts_with": ["pose.bones[\"rp_"]},
+        {"starts_with": ["pose.bones[\"rlp_"]}
+      ]
+    },
+    {
       "description": "Update left-hand controllers.",
       "action_search": "revelant_actions",
       "replace_channel_operations": [
