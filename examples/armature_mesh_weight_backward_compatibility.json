@@ -1,6 +1,12 @@
 {
   "update_tasks": [
     {
+      "description": "Remove position bone that should not be included in meshes weights",
+      "remove_starting_operations": [
+        {"starts_with": ["pos_", "Pos_"]}
+      ]
+    },
+    {
       "description": "Update left-hand weights.",
       "replace_operations": [
         {"old": ["Hand_L"], "new": "hand_l", "conflit_resolution": "merge"},

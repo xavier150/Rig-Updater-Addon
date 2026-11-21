@@ -61,13 +61,8 @@ def load_rig_controllers_backward_compatibility(filepath: str) -> rua_rig_type.R
                     target, rua_json_utils.parse_removals(value, f"{location}.{key}", rua_rig_type.RemovalOperation),
                 ))
             elif key == "remove_starting_channel_operations":
-                prefixes: List[str] = []
-                for operation_index, item in enumerate(rua_json_utils.require_list(value, f"{location}.{key}")):
-                    operation_location = f"{location}.{key}[{operation_index}]"
-                    operation = rua_json_utils.require_dict(item, operation_location, {"starts_with"})
-                    prefixes.extend(rua_json_utils.parse_old_names(
-                        operation["starts_with"], f"{operation_location}.starts_with",
-                    ))
-                sections.append(rua_rig_type.RemoveStartingChannelSection(prefixes))
+                sections.append(rua_rig_type.RemoveStartingChannelSection(
+                    rua_json_utils.parse_starting_prefixes(value, f"{location}.{key}"),
+                ))
         tasks.append(rua_rig_type.RigControllerUpdateTask(description, sections, search))
     return rua_rig_type.RigControllersBackwardCompatibility(tasks)

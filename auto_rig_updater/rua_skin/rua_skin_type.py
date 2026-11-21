@@ -23,6 +23,7 @@ class MeshWeightUpdateTask:
     description: str
     replace_operations: List[MeshWeightReplaceOperation]
     remove_operations: List[RemovalOperation]
+    remove_starting_prefixes: List[str] = dataclasses.field(default_factory=list)
 
 
 @dataclasses.dataclass(frozen=True)

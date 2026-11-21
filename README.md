@@ -76,6 +76,12 @@ Weight mesh configuration used to update the skinning of mesh objects:
 {
   "update_tasks": [
     {
+      "description": "Remove position bone weights.",
+      "remove_starting_operations": [
+        {"starts_with": ["pos_", "Pos_"]}
+      ]
+    },
+    {
       "description": "Update hand weights.",
       "replace_operations": [
         {"old": ["Hand_L"], "new": "hand_l", "conflit_resolution": "merge"},
@@ -105,6 +111,11 @@ vertex group already exists:
 
 If the new group does not exist, the old group is transferred to it. Multiple
 names in `old` are processed in order.
+
+`remove_starting_operations` removes vertex groups whose names start with any
+prefix in the non-empty `starts_with` list. Matching is case-sensitive. Tasks
+run in order; within each task, replacements run first, followed by exact
+removals and then prefix removals.
 
 Rig controller configuration used to update the blender actions:
 

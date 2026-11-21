@@ -105,6 +105,15 @@ def parse_removals(
     return removals
 
 
+def parse_starting_prefixes(value: object, location: str) -> List[str]:
+    prefixes: List[str] = []
+    for index, item in enumerate(require_list(value, location)):
+        operation_location = f"{location}[{index}]"
+        operation = require_dict(item, operation_location, {"starts_with"})
+        prefixes.extend(parse_old_names(operation["starts_with"], f"{operation_location}.starts_with"))
+    return prefixes
+
+
 def load_document(filepath: str) -> object:
     error = get_config_file_error(filepath)
     if error is not None:

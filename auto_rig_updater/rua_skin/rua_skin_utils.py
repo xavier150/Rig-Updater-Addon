@@ -28,10 +28,31 @@ def _parse_mesh_operation(item: object, location: str) -> rua_skin_type.MeshWeig
 
 
 def load_mesh_weight_backward_compatibility(filepath: str) -> rua_skin_type.MeshWeightBackwardCompatibility:
-    return rua_skin_type.MeshWeightBackwardCompatibility(rua_json_utils.parse_update_tasks(
-        rua_json_utils.load_document(filepath), _parse_mesh_operation,
-        rua_skin_type.RemovalOperation, rua_skin_type.MeshWeightUpdateTask,
-    ))
+    document = rua_json_utils.require_dict(rua_json_utils.load_document(filepath), "JSON", {"update_tasks"})
+    tasks: List[rua_skin_type.MeshWeightUpdateTask] = []
+    operation_keys = {"replace_operations", "remove_operations", "remove_starting_operations"}
+    for index, item in enumerate(rua_json_utils.require_list(document["update_tasks"], "update_tasks")):
+        location = f"update_tasks[{index}]"
+        keys = {"description"}
+        if isinstance(item, dict):
+            keys.update(key for key in operation_keys if key in item)
+        task = rua_json_utils.require_dict(item, location, keys)
+        if len(keys) == 1:
+            raise ValueError(f"{location}: expected at least one operations section.")
+        description = task["description"]
+        if not isinstance(description, str):
+            raise ValueError(f"{location}.description: expected a string.")
+        replacements = rua_json_utils.parse_replacements(
+            task.get("replace_operations", []), f"{location}.replace_operations", _parse_mesh_operation,
+        )
+        removals = rua_json_utils.parse_removals(
+            task.get("remove_operations", []), f"{location}.remove_operations", rua_skin_type.RemovalOperation,
+        )
+        prefixes = rua_json_utils.parse_starting_prefixes(
+            task.get("remove_starting_operations", []), f"{location}.remove_starting_operations",
+        )
+        tasks.append(rua_skin_type.MeshWeightUpdateTask(description, replacements, removals, prefixes))
+    return rua_skin_type.MeshWeightBackwardCompatibility(tasks)
 
 
 def get_armature_children_meshes(armature: bpy.types.Object) -> List[bpy.types.Object]:
@@ -63,6 +84,13 @@ def update_meshes_weights_backward_compatibility(
                             obj.vertex_groups.remove(group)
                             skin_updater.remove_weights += 1
                             print(f'"{old_name}" removed from "{obj.name}".')
+                prefixes = tuple(task.remove_starting_prefixes)
+                for group in list(obj.vertex_groups):
+                    if group.name.startswith(prefixes):
+                        name = group.name
+                        obj.vertex_groups.remove(group)
+                        skin_updater.remove_weights += 1
+                        print(f'"{name}" removed from "{obj.name}".')
 
     skin_updater.print_update_log()
 
