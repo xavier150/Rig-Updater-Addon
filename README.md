@@ -84,13 +84,18 @@ to library overrides before relinking. Local drivers,
 NLA strips other than action clips, and clips with modifiers cannot currently be transferred.
 Libraries referenced by another linked library must be updated in their parent file.
 
-An optional `object_scale_multipliers` object in a relink task applies scale factors
-after restoring world transforms, for example `"object_scale_multipliers": {"Cobble_Character": 100.0}`.
-Names match root override objects in the new linked collection; missing objects,
-parented objects and objects without overrides are skipped. Children retain the
-new library's local transforms rather than their old world matrices.
-Factors must be finite positive numbers. Only object scale is multiplied, not
-animation keys or armature data; children follow the scaled parent. Animated or
+Optional `object_scale_multipliers` and `object_location_multipliers` objects in a
+relink task multiply local scale and location after relinking, for example
+`"object_scale_multipliers": {"Cobble_Character": 100.0}` and
+`"object_location_multipliers": {"Sub_StuckZoneProxyFloor": 0.01}`.
+Names match objects in the scene containing the updated collection, inside or
+outside that collection, with or without a parent or override. Each adjustment
+is applied once per object per task, only if the task relinks a collection.
+Missing objects are skipped; directly linked read-only objects are skipped with a warning.
+Without an explicit multiplier, children retain the new library's local transforms.
+Factors must be finite positive numbers. Animation keys and armature data are
+unchanged; children also inherit their parent's transforms. These adjustments are
+independent of `Update Scene Scale`. Animated or
 constrained transforms remain controlled by their animation, drivers and constraints.
 
 Weight mesh configuration used to update the skinning of mesh objects:

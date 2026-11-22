@@ -25,8 +25,11 @@ def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdat
         task_keys = {"description", "old", "new"}
         if collection:
             task_keys.update({"old_collection", "new_collection"})
-            if isinstance(value, dict) and "object_scale_multipliers" in value:
-                task_keys.add("object_scale_multipliers")
+            if isinstance(value, dict):
+                task_keys.update(
+                    key for key in ("object_scale_multipliers", "object_location_multipliers")
+                    if key in value
+                )
         task = rua_json_utils.require_dict(value, location, task_keys)
         description = task["description"]
         if not isinstance(description, str):
@@ -36,26 +39,16 @@ def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdat
         if any(os.path.splitext(path)[1].lower() != ".blend" for path in old_paths + [new_path]):
             raise ValueError(f"{location}: library paths must point to .blend files.")
         if collection:
-            multipliers_value = task.get("object_scale_multipliers", {})
-            if not isinstance(multipliers_value, dict):
-                raise ValueError(f"{location}.object_scale_multipliers: expected an object.")
-            multipliers: Dict[str, float] = {}
-            for name, factor in cast(Dict[object, object], multipliers_value).items():
-                if not isinstance(name, str) or not name:
-                    raise ValueError(f"{location}.object_scale_multipliers: expected non-empty object names.")
-                if (
-                    isinstance(factor, bool) or not isinstance(factor, (int, float))
-                    or not math.isfinite(factor) or factor <= 0
-                ):
-                    raise ValueError(
-                        f"{location}.object_scale_multipliers.{name}: expected a finite positive number."
-                    )
-                multipliers[name] = float(factor)
             return rua_scene_type.CollectionRelinkTask(
                 description, old_paths, new_path,
                 rua_json_utils.parse_new_name(task["old_collection"], f"{location}.old_collection"),
                 rua_json_utils.parse_new_name(task["new_collection"], f"{location}.new_collection"),
-                multipliers,
+                _parse_object_multipliers(
+                    task.get("object_scale_multipliers", {}), f"{location}.object_scale_multipliers",
+                ),
+                _parse_object_multipliers(
+                    task.get("object_location_multipliers", {}), f"{location}.object_location_multipliers",
+                ),
             )
         return rua_scene_type.LibraryUpdateTask(description, old_paths, new_path)
 
@@ -74,6 +67,23 @@ def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdat
             raise RuntimeError("Collection relink task parsing returned an invalid task.")
         collection_tasks.append(task)
     return rua_scene_type.LibrariesUpdateRules(reload_tasks, collection_tasks)
+
+
+def _parse_object_multipliers(value: object, location: str) -> Dict[str, float]:
+    """Validate the name-to-factor mapping shared by local scale and location adjustments."""
+    if not isinstance(value, dict):
+        raise ValueError(f"{location}: expected an object.")
+    multipliers: Dict[str, float] = {}
+    for name, factor in cast(Dict[object, object], value).items():
+        if not isinstance(name, str) or not name:
+            raise ValueError(f"{location}: expected non-empty object names.")
+        if (
+            isinstance(factor, bool) or not isinstance(factor, (int, float))
+            or not math.isfinite(factor) or factor <= 0
+        ):
+            raise ValueError(f"{location}.{name}: expected a finite positive number.")
+        multipliers[name] = float(factor)
+    return multipliers
 
 
 def absolute_path(path: str, library: Optional[bpy.types.Library] = None) -> str:

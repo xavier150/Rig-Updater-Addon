@@ -237,7 +237,7 @@ def _restore_world_transforms(
 
 def _relink_collection(
     root: bpy.types.Collection, task: rua_scene_type.CollectionRelinkTask,
-) -> None:
+) -> bpy.types.Scene:
     """Replace one collection and restore matching objects' scene-local data."""
     if bpy.context.mode == 'POSE':
         active = bpy.context.active_object
@@ -248,8 +248,7 @@ def _relink_collection(
             raise RuntimeError("Cannot leave Pose Mode for collection relinking.")
         with ExitStack() as stack:
             stack.callback(_restore_pose_mode, active_name)
-            _relink_collection(root, task)
-        return
+            return _relink_collection(root, task)
     if bpy.context.mode != 'OBJECT':
         raise RuntimeError("Collection relinking requires Object Mode.")
     parents = _collection_parents(root)
@@ -383,11 +382,6 @@ def _relink_collection(
             (new_objects[name], matrix) for name, matrix in world_matrices.items()
             if name in new_objects
         ], view_layer)
-        for name, factor in task.object_scale_multipliers.items():
-            obj = new_objects.get(name)
-            if obj is not None and obj.override_library is not None and obj.parent is None:
-                obj.scale *= factor
-        view_layer.update()
         _restore_world_transforms(parent_matrices, view_layer)
         for snapshot in snapshots:
             bpy.data.objects.remove(snapshot.backup, do_unlink=True)
@@ -397,6 +391,34 @@ def _relink_collection(
             if obj is not None:
                 obj.name = snapshot.name
         completed[0] = True
+    return scene
+
+
+def _apply_object_multipliers(
+    task: rua_scene_type.CollectionRelinkTask, scenes: Set[bpy.types.Scene],
+) -> None:
+    """Adjust named objects' local transforms once per task, inside or outside the collection."""
+    for attribute, multipliers in (
+        ("scale", task.object_scale_multipliers),
+        ("location", task.object_location_multipliers),
+    ):
+        applied: Set[bpy.types.Object] = set()
+        for scene in scenes:
+            for name, factor in multipliers.items():
+                obj = scene.objects.get(name)
+                if obj is None or obj in applied:
+                    continue
+                applied.add(obj)
+                if obj.library is not None:
+                    print(f"[Rig Updater] Warning: cannot multiply {attribute} on linked object '{name}'.")
+                    continue
+                if attribute == "scale":
+                    obj.scale *= factor
+                else:
+                    obj.location *= factor
+    for scene in scenes:
+        for view_layer in scene.view_layers:
+            view_layer.update()
 
 
 def relink_scene_collections(
@@ -450,7 +472,9 @@ def relink_scene_collections(
         raise ValueError("Collection relinking requires Blender 3.5 or newer.")
     updated = 0
     for task, matches in plans:
+        scenes: Set[bpy.types.Scene] = set()
         for root in matches:
-            _relink_collection(root, task)
+            scenes.add(_relink_collection(root, task))
             updated += 1
+        _apply_object_multipliers(task, scenes)
     return updated
