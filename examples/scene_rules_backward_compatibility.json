@@ -16,7 +16,10 @@
         ],
         "new": "M:\\MMVS_ProjectFiles_v2\\SourceAssets\\Characters\\Cobble_Character\\Rig\\v5\\Cobble_Character.blend",
         "old_collection": "Cobble_Character_Collection",
-        "new_collection": "Cobble_Character_Collection"
+        "new_collection": "Cobble_Character_Collection",
+        "object_scale_multipliers": {
+          "Cobble_Character": 100.0
+        }
       }
     ]
   }

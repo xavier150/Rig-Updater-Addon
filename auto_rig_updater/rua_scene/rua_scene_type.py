@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 import dataclasses
-from typing import List
+from typing import Dict, List
 
 
 @dataclasses.dataclass(frozen=True)
@@ -26,6 +26,7 @@ class LibraryUpdateTask:
 class CollectionRelinkTask(LibraryUpdateTask):
     old_collection: str
     new_collection: str
+    object_scale_multipliers: Dict[str, float] = dataclasses.field(default_factory=dict)
 
 
 @dataclasses.dataclass(frozen=True)

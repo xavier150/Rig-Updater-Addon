@@ -64,15 +64,18 @@ Set **Scene Rules JSON** in Config to use the scene rules example in `examples`.
 
 The four rescale options are required booleans; set them to `false` to change only
 the unit scale. Enabled data is multiplied by the old unit scale divided by the
-target unit scale. Object positions and rig data are limited to the current scene;
-animation location channels are updated in all actions in the file. Object scale
-is unchanged.
+target unit scale. `scale_object_position` scales position and object scale only
+on local root objects (objects without a parent) in the current scene, including
+library overrides and ordinary objects such as a Cube. Children follow their
+parent without changing their local transforms; directly linked objects are not rescaled.
+Rig data is limited to the current scene; animation location channels are updated
+in all actions in the file.
 `scale_user_view` rescales the pivot and viewing distance outside camera view,
 plus the clipping start/end distances, in all saved 3D viewports, including quad views.
 It does not move camera objects.
 
 `reload_tasks` relocates libraries and refreshes existing editable object overrides.
-`collection_relink_tasks` replaces collection overrides, restores object animation
+`collection_relink_tasks` replaces collection overrides, restores root override world transforms, animation
 and local constraints, and uses the new rig's Rig Controllers JSON to rename bones
 when restoring constraints. Objects or bones missing from the new collection are
 skipped. Either task list may be omitted. Back up the `.blend` before relinking.
@@ -80,6 +83,15 @@ Collection relinking requires Blender 3.5 or newer. Convert collection instances
 to library overrides before relinking. Local drivers,
 NLA strips other than action clips, and clips with modifiers cannot currently be transferred.
 Libraries referenced by another linked library must be updated in their parent file.
+
+An optional `object_scale_multipliers` object in a relink task applies scale factors
+after restoring world transforms, for example `"object_scale_multipliers": {"Cobble_Character": 100.0}`.
+Names match root override objects in the new linked collection; missing objects,
+parented objects and objects without overrides are skipped. Children retain the
+new library's local transforms rather than their old world matrices.
+Factors must be finite positive numbers. Only object scale is multiplied, not
+animation keys or armature data; children follow the scaled parent. Animated or
+constrained transforms remain controlled by their animation, drivers and constraints.
 
 Weight mesh configuration used to update the skinning of mesh objects:
 ```json

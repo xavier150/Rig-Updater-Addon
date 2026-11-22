@@ -225,6 +225,16 @@ def _restore_pose_mode(active_name: str) -> None:
         print(f"[Rig Updater] Warning: could not restore Pose Mode on '{active_name}'.")
 
 
+def _restore_world_transforms(
+    transforms: List[Tuple[bpy.types.Object, Matrix]], view_layer: bpy.types.ViewLayer,
+) -> None:
+    """Restore only root overrides; children retain their new rig's local transforms."""
+    for obj, matrix in transforms:
+        if obj.override_library is not None and obj.parent is None:
+            obj.matrix_world = matrix
+    view_layer.update()
+
+
 def _relink_collection(
     root: bpy.types.Collection, task: rua_scene_type.CollectionRelinkTask,
 ) -> None:
@@ -291,6 +301,11 @@ def _relink_collection(
         stack.callback(cleanup_snapshots)
         window.scene = scene
         window.view_layer = view_layer
+        view_layer.update()
+        world_matrices = {
+            _reference_name(obj): obj.matrix_world.copy() for obj in old_objects
+            if obj.override_library is not None and obj.parent is None
+        }
         for obj in local_objects:
             # Copying an object can change constraint override flags.
             bone_constraints = {
@@ -353,7 +368,7 @@ def _relink_collection(
             if new is not None:
                 if cast(Optional[bpy.types.Library], new.library) is not None:
                     raise ValueError(f"Object '{new.name}' is linked and cannot receive scene data.")
-        _restore_object_references(references, parent_matrices, new_objects)
+        _restore_object_references(references, [], new_objects)
         for snapshot, new in pairs:
             if new is not None:
                 _copy_object_animation(snapshot.backup, new)
@@ -363,6 +378,17 @@ def _relink_collection(
                 parent.children.link(new_root)
         if scene.collection not in parents and new_root in scene.collection.children[:]:
             scene.collection.children.unlink(new_root)
+        view_layer.update()
+        _restore_world_transforms([
+            (new_objects[name], matrix) for name, matrix in world_matrices.items()
+            if name in new_objects
+        ], view_layer)
+        for name, factor in task.object_scale_multipliers.items():
+            obj = new_objects.get(name)
+            if obj is not None and obj.override_library is not None and obj.parent is None:
+                obj.scale *= factor
+        view_layer.update()
+        _restore_world_transforms(parent_matrices, view_layer)
         for snapshot in snapshots:
             bpy.data.objects.remove(snapshot.backup, do_unlink=True)
         snapshots.clear()

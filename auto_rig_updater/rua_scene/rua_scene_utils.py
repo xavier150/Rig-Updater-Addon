@@ -69,17 +69,20 @@ def update_scene_scale(scene: bpy.types.Scene, configuration: rua_scene_type.Sce
     # Blender stores the unit scale as a single-precision float.
     if not math.isclose(scale_factor, 1.0, rel_tol=1e-7):
         objects = list(scene.objects)
-        if rules.scale_object_position and objects:
+        root_objects = [
+            obj for obj in objects if obj.library is None and obj.parent is None
+        ]
+        if rules.scale_object_position and root_objects:
             bbpl.scene.scale_utils.scale_objects(
-                scale_factor, use_location=True, use_scale=False,
-                white_list=objects, scene_only=False,
+                scale_factor, use_location=True, use_scale=True,
+                white_list=root_objects, scene_only=False,
             )
         if rules.scale_animation_location_channels:
             linked_actions = [action for action in bpy.data.actions if action.library is not None]
             bbpl.scene.scale_utils.scale_animations(scale_factor, black_list=linked_actions)
         if rules.scale_rig and objects:
             bbpl.scene.scale_utils.scale_rigs_data(
-                scale_factor, white_list=objects, scene_only=False,
+                scale_factor, white_list=objects, scene_only=True,
             )
         if rules.scale_user_view:
             bbpl.scene.scale_utils.scale_user_view(scale_factor)

@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 import os
+import math
 from typing import Callable, Dict, List, Optional, Set, cast
 
 import bpy
@@ -24,6 +25,8 @@ def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdat
         task_keys = {"description", "old", "new"}
         if collection:
             task_keys.update({"old_collection", "new_collection"})
+            if isinstance(value, dict) and "object_scale_multipliers" in value:
+                task_keys.add("object_scale_multipliers")
         task = rua_json_utils.require_dict(value, location, task_keys)
         description = task["description"]
         if not isinstance(description, str):
@@ -33,10 +36,26 @@ def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdat
         if any(os.path.splitext(path)[1].lower() != ".blend" for path in old_paths + [new_path]):
             raise ValueError(f"{location}: library paths must point to .blend files.")
         if collection:
+            multipliers_value = task.get("object_scale_multipliers", {})
+            if not isinstance(multipliers_value, dict):
+                raise ValueError(f"{location}.object_scale_multipliers: expected an object.")
+            multipliers: Dict[str, float] = {}
+            for name, factor in cast(Dict[object, object], multipliers_value).items():
+                if not isinstance(name, str) or not name:
+                    raise ValueError(f"{location}.object_scale_multipliers: expected non-empty object names.")
+                if (
+                    isinstance(factor, bool) or not isinstance(factor, (int, float))
+                    or not math.isfinite(factor) or factor <= 0
+                ):
+                    raise ValueError(
+                        f"{location}.object_scale_multipliers.{name}: expected a finite positive number."
+                    )
+                multipliers[name] = float(factor)
             return rua_scene_type.CollectionRelinkTask(
                 description, old_paths, new_path,
                 rua_json_utils.parse_new_name(task["old_collection"], f"{location}.old_collection"),
                 rua_json_utils.parse_new_name(task["new_collection"], f"{location}.new_collection"),
+                multipliers,
             )
         return rua_scene_type.LibraryUpdateTask(description, old_paths, new_path)
 
