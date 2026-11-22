@@ -14,6 +14,7 @@ import bpy
 from .. import rua_action
 from .. import rua_armature
 from .. import rua_check
+from .. import rua_json_file_selector
 from . import rua_ui_utils
 
 if "rua_ui_utils" in locals():
@@ -46,6 +47,7 @@ classes = (
 
 
 def register() -> None:
+    rua_json_file_selector.register()
     for cls in classes:
         bpy.utils.register_class(cls)
 
@@ -53,3 +55,4 @@ def register() -> None:
 def unregister() -> None:
     for cls in reversed(classes):
         bpy.utils.unregister_class(cls)
+    rua_json_file_selector.unregister()

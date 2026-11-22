@@ -50,7 +50,6 @@ def register() -> None:
         bpy.props.StringProperty( # type: ignore
             name="Mesh Weights JSON",
             description="JSON migration rules for this armature's mesh vertex groups",
-            subtype='FILE_PATH',
             options=options,  # type: ignore
             default="",
         ),
@@ -61,7 +60,6 @@ def register() -> None:
         bpy.props.StringProperty( # type: ignore
             name="Rig Controllers JSON",
             description="JSON migration rules for animation FCurve data paths",
-            subtype='FILE_PATH',
             options=options,  # type: ignore
             default="",
         ),

@@ -38,7 +38,6 @@ def register() -> None:
         bpy.props.StringProperty(  # type: ignore
             name="Scene Rules JSON",
             description="JSON migration rules for scene units and linked libraries",
-            subtype='FILE_PATH',
             options=options,  # type: ignore
             default="",
         ),
