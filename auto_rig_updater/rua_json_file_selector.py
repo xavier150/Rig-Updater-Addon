@@ -84,7 +84,7 @@ class RUA_OT_SelectJsonFile(bpy.types.Operator):
             self.report({'WARNING'}, "Select a .json file.")
             return {'CANCELLED'}
 
-        setattr(owner, self.property_name, bpy.path.relpath(self.filepath))
+        setattr(owner, self.property_name, self.filepath)
         return {'FINISHED'}
 
 
