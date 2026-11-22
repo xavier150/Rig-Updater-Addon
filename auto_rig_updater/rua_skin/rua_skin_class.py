@@ -110,6 +110,55 @@ class RUA_OT_CheckMeshesWeightsAll(bpy.types.Operator):
         return _check_armatures(self, armatures)
 
 
+class RUA_OT_UpdateArmatureDeformBones(bpy.types.Operator):
+    bl_idname = "rua.update_armature_deform_bones"
+    bl_label = "Update Armature Deform Bones"
+    bl_description = "Rename armature bones using the configured mesh weight compatibility rules"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    if TYPE_CHECKING:
+        target_object: str
+    else:
+        target_object: bpy.props.StringProperty(
+            name="Target Object",
+            description="Armature object name; leave empty to use the active armature",
+            default="",
+            options={'SKIP_SAVE'},
+        )
+
+    def execute(self, context: bpy.types.Context) -> "Set[rna_enums.OperatorReturnItems]":
+        armature, error = rua_armature.rua_armature_utils.get_target_armature(context, self.target_object)
+        if error is not None:
+            print(bpl.color_set.yellow(f"[Rig Updater] Warning: {error}"))
+            self.report({'WARNING'}, error)
+            return {'CANCELLED'}
+        if armature is None:
+            raise RuntimeError("Target armature resolution returned no object.")
+
+        filepath = rua_armature.rua_armature_utils.get_config_filepath(
+            armature,
+            rua_armature.rua_armature_props.get_object_armature_mesh_weight_backward_compatibility(armature),
+            property_name="rua_armature_mesh_weight_backward_compatibility",
+        )
+        error = rua_json_utils.get_config_file_error(filepath)
+        if error is not None:
+            print(bpl.color_set.yellow(f"[Rig Updater] Warning: {error}"))
+            self.report({'WARNING'}, error)
+            return {'CANCELLED'}
+
+        configuration = rua_skin_utils.load_mesh_weight_backward_compatibility(filepath)
+        updated_count, conflicts = rua_skin_utils.update_armature_deform_bones_backward_compatibility(
+            armature, configuration,
+        )
+        message = f"{updated_count} armature bone(s) renamed."
+        if conflicts:
+            message += f" {len(conflicts)} name conflict(s) skipped. See the system console."
+            self.report({'WARNING'}, message)
+        else:
+            self.report({'INFO'}, message)
+        return {'FINISHED'}
+
+
 class RUA_OT_UpdateMeshesWeightsBackwardCompatibility(bpy.types.Operator):
     bl_idname = "rua.update_meshes_weights_backward_compatibility"
     bl_label = "Update Mesh Weights"
@@ -172,6 +221,7 @@ class RUA_OT_UpdateMeshesWeightsBackwardCompatibility(bpy.types.Operator):
 classes = (
     RUA_OT_CheckMeshesWeights,
     RUA_OT_CheckMeshesWeightsAll,
+    RUA_OT_UpdateArmatureDeformBones,
     RUA_OT_UpdateMeshesWeightsBackwardCompatibility,
 )
 

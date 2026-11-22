@@ -7,7 +7,7 @@
 #  https://github.com/xavier150/Rig-Updater-Addon
 # ----------------------------------------------
 
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Tuple
 
 import bpy
 
@@ -93,6 +93,37 @@ def update_meshes_weights_backward_compatibility(
                         print(f'"{name}" removed from "{obj.name}".')
 
     skin_updater.print_update_log()
+
+
+def update_armature_deform_bones_backward_compatibility(
+    armature: bpy.types.Object,
+    configuration: rua_skin_type.MeshWeightBackwardCompatibility,
+) -> Tuple[int, List[Tuple[str, str]]]:
+    if not isinstance(armature.data, bpy.types.Armature):
+        raise ValueError(f"Object '{armature.name}' is not an armature.")
+
+    updated_count = 0
+    conflicts: List[Tuple[str, str]] = []
+    print(f"Starting armature bone update backward compatibility for '{armature.name}'...")
+
+    for task in configuration.update_tasks:
+        for operation in task.replace_operations:
+            for old_name in operation.old:
+                bone = armature.data.bones.get(old_name)
+                if bone is None or old_name == operation.new:
+                    continue
+                if armature.data.bones.get(operation.new) is not None:
+                    conflicts.append((old_name, operation.new))
+                    print(
+                        f'Warning: Bone "{old_name}" in armature "{armature.name}" '
+                        f'was not renamed to "{operation.new}" because that name already exists.'
+                    )
+                    continue
+                bone.name = operation.new
+                updated_count += 1
+                print(f'Bone "{old_name}" renamed to "{operation.new}" in "{armature.name}".')
+
+    return updated_count, conflicts
 
 
 def get_used_vertex_groups(obj: bpy.types.Object) -> List[str]:
