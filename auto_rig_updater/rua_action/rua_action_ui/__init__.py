@@ -37,13 +37,19 @@ def register() -> None:
     rua_action_ui_class.register()
     setattr(
         bpy.types.Scene,
-        "rua_actions_accordion",
-        bbpl.blender_layout.layout_accordion.add_ui_accordion(name="Actions"),
+        "rua_rig_actions_accordion",
+        bbpl.blender_layout.layout_accordion.add_ui_accordion(name="Rig Actions"),
+    )
+    setattr(
+        bpy.types.Scene,
+        "rua_scene_action_accordion",
+        bbpl.blender_layout.layout_accordion.add_ui_accordion(name="Scene Action"),
     )
 
 
 def unregister() -> None:
-    delattr(bpy.types.Scene, "rua_actions_accordion")
+    delattr(bpy.types.Scene, "rua_scene_action_accordion")
+    delattr(bpy.types.Scene, "rua_rig_actions_accordion")
     rua_action_ui_class.unregister()
 
     for cls in reversed(classes):
