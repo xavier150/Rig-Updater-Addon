@@ -76,8 +76,9 @@ It does not move camera objects.
 
 `reload_tasks` relocates libraries and refreshes existing editable object overrides.
 `collection_relink_tasks` replaces collection overrides, restores root override world transforms, animation
-and local constraints, and uses the new rig's Rig Controllers JSON to rename bones
-when restoring constraints. Objects or bones missing from the new collection are
+and local constraints, and uses the new rig's Rig Controllers and Mesh Weights JSON
+to rename constraint owner and target bones, including targets on the same rig.
+Objects or bones missing from the new collection are
 skipped. Either task list may be omitted. Back up the `.blend` before relinking.
 Collection relinking requires Blender 3.5 or newer. Convert collection instances
 to library overrides before relinking. Local drivers,

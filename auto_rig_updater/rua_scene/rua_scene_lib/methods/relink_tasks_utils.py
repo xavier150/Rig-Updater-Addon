@@ -51,26 +51,39 @@ def _reference_name(obj: bpy.types.Object) -> str:
 
 
 def _bone_name_mapping(obj: bpy.types.Object) -> List[Tuple[List[str], str]]:
-    """Load bone replacement operations from the rig controller configuration."""
+    """Load controller and deform bone replacement operations from the new rig."""
     from ....rua_armature import rua_armature_props, rua_armature_utils
     from ....rua_rig import rua_rig_type, rua_rig_utils
+    from ....rua_skin import rua_skin_utils
 
-    if not hasattr(obj, "rua_armature_rig_controllers_backward_compatibility"):
-        return []
-    value = rua_armature_props.get_object_armature_rig_controllers_backward_compatibility(obj)
-    if not value.strip():
-        return []
-    filepath = rua_armature_utils.get_config_filepath(
-        obj, value, property_name="rua_armature_rig_controllers_backward_compatibility",
-    )
-    configuration = rua_rig_utils.load_rig_controllers_backward_compatibility(filepath)
-    return [
-        (operation.old, operation.new)
-        for task in configuration.update_tasks
-        for section in task.sections
-        if isinstance(section, rua_rig_type.ReplaceSection) and section.target == "bone"
-        for operation in section.operations
-    ]
+    mapping: List[Tuple[List[str], str]] = []
+    if hasattr(obj, "rua_armature_rig_controllers_backward_compatibility"):
+        value = rua_armature_props.get_object_armature_rig_controllers_backward_compatibility(obj)
+        if value.strip():
+            filepath = rua_armature_utils.get_config_filepath(
+                obj, value, property_name="rua_armature_rig_controllers_backward_compatibility",
+            )
+            configuration = rua_rig_utils.load_rig_controllers_backward_compatibility(filepath)
+            mapping.extend(
+                (operation.old, operation.new)
+                for task in configuration.update_tasks
+                for section in task.sections
+                if isinstance(section, rua_rig_type.ReplaceSection) and section.target == "bone"
+                for operation in section.operations
+            )
+    if hasattr(obj, "rua_armature_mesh_weight_backward_compatibility"):
+        value = rua_armature_props.get_object_armature_mesh_weight_backward_compatibility(obj)
+        if value.strip():
+            filepath = rua_armature_utils.get_config_filepath(
+                obj, value, property_name="rua_armature_mesh_weight_backward_compatibility",
+            )
+            deform_configuration = rua_skin_utils.load_mesh_weight_backward_compatibility(filepath)
+            mapping.extend(
+                (operation.old, operation.new)
+                for task in deform_configuration.update_tasks
+                for operation in task.replace_operations
+            )
+    return mapping
 
 
 def _new_bone_name(name: str, mapping: List[Tuple[List[str], str]]) -> str:
@@ -148,16 +161,19 @@ def _copy_object_animation(source: bpy.types.Object, destination: bpy.types.Obje
 
 
 def _capture_object_references(
-    old_names: Dict[bpy.types.Object, str],
+    old_names: Dict[bpy.types.Object, str], snapshots: List[_ObjectSnapshot],
 ) -> Tuple[List[Tuple[object, str, str]], List[Tuple[bpy.types.Object, Matrix]]]:
     """Record local references to old objects and parented objects' world transforms."""
     references: List[Tuple[object, str, str]] = []
     parents: List[Tuple[bpy.types.Object, Matrix]] = []
+    # Object.copy() redirects self-targeting bone constraints to the backup.
+    reference_names = {snapshot.backup: snapshot.reference_name for snapshot in snapshots}
+    reference_names.update(old_names)
 
     def capture(owner: object, attribute: str) -> None:
         value: object = getattr(owner, attribute, None)
-        if isinstance(value, bpy.types.Object) and value in old_names:
-            references.append((owner, attribute, old_names[value]))
+        if isinstance(value, bpy.types.Object) and value in reference_names:
+            references.append((owner, attribute, reference_names[value]))
 
     def capture_constraints(constraints: Iterable[bpy.types.Constraint]) -> None:
         for constraint in constraints:
@@ -316,7 +332,7 @@ def _relink_collection(
                 [constraint.name for constraint in obj.constraints if not constraint.is_override_data],
                 {name: constraints for name, constraints in bone_constraints.items() if constraints},
             ))
-        references, parent_matrices = _capture_object_references(old_names)
+        references, parent_matrices = _capture_object_references(old_names, snapshots)
         removed[0] = True
         if cast(Optional[bpy.types.Library], root.library) is not None:
             for parent in parents:
