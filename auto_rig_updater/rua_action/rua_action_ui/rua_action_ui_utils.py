@@ -20,4 +20,6 @@ def draw(layout: bpy.types.UILayout, context: bpy.types.Context) -> None:
             panel.operator("rua.update_scene_libraries")
             panel.operator("rua.update_scene_scale")
             panel.operator("rua.update_meshes_weights_backward_compatibility")
-            panel.operator("rua.update_actions_backward_compatibility")
+            row = panel.row(align=True)
+            row.operator("rua.update_actions_backward_compatibility")
+            row.operator("rua.update_actions_backward_compatibility_all")

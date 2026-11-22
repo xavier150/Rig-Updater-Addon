@@ -106,7 +106,7 @@ class RUA_OT_CheckActionsAll(bpy.types.Operator):
 
 class RUA_OT_UpdateActionsBackwardCompatibility(bpy.types.Operator):
     bl_idname = "rua.update_actions_backward_compatibility"
-    bl_label = "Update Actions"
+    bl_label = "Update Actions (Active)"
     bl_description = "Update local animation actions for the newer rig"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -139,6 +139,53 @@ class RUA_OT_UpdateActionsBackwardCompatibility(bpy.types.Operator):
         return {'FINISHED'}
 
 
+def _update_actions_backward_compatibility(operator: bpy.types.Operator, armature: bpy.types.Object) -> bool:
+    configuration, error = rua_action_utils.load_armature_configuration(armature)
+    if error is not None:
+        print(bpl.color_set.yellow(f'[Rig Updater] Warning: Armature "{armature.name}": {error}'))
+        operator.report({'WARNING'}, f'Armature "{armature.name}": {error}')
+        return False
+    if configuration is None:
+        raise RuntimeError("Rig configuration loading returned no configuration.")
+    rua_action_utils.update_action_backward_compatibility(configuration, armature=armature)
+    return True
+
+
+class RUA_OT_UpdateActionsBackwardCompatibilityAll(bpy.types.Operator):
+    bl_idname = "rua.update_actions_backward_compatibility_all"
+    bl_label = "Update Actions (All)"
+    bl_description = "Update local animation actions for every armature in the scene"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context: bpy.types.Context) -> "Set[rna_enums.OperatorReturnItems]":
+        if context.scene is None:
+            self.report({'WARNING'}, "No active scene.")
+            return {'CANCELLED'}
+
+        armatures = [obj for obj in context.scene.objects if isinstance(obj.data, bpy.types.Armature)]
+        if not armatures:
+            message = "No armatures found in the scene."
+            print(bpl.color_set.yellow(f"[Rig Updater] Warning: {message}"))
+            self.report({'WARNING'}, message)
+            return {'CANCELLED'}
+
+        updated_count = 0
+        errors = 0
+        for armature in armatures:
+            if _update_actions_backward_compatibility(self, armature):
+                updated_count += 1
+            else:
+                errors += 1
+
+        if updated_count == 0:
+            self.report({'WARNING'}, "No armatures could be updated. See the system console.")
+            return {'CANCELLED'}
+
+        message = f"{updated_count} armatures updated; {errors} armatures not updated. See the system console."
+        self.report({'WARNING'} if errors else {'INFO'}, message)
+        return {'FINISHED'}
+
+
 # -------------------------------------------------------------------
 #   Register & Unregister
 # -------------------------------------------------------------------
@@ -148,6 +195,7 @@ classes = (
     RUA_OT_CheckActions,
     RUA_OT_CheckActionsAll,
     RUA_OT_UpdateActionsBackwardCompatibility,
+    RUA_OT_UpdateActionsBackwardCompatibilityAll,
 )
 
 
