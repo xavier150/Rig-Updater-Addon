@@ -28,7 +28,7 @@ def load_rig_controllers_backward_compatibility(filepath: str) -> rua_rig_type.R
         optional_keys = {
             "replace_channel_operations", "remove_channel_operations",
             "replace_bone_operations", "remove_bone_operations",
-            "remove_starting_channel_operations",
+            "remove_starting_channel_operations", "remove_deform_bones",
         }
         keys = {"description", "action_search"}
         if isinstance(item, dict):
@@ -47,7 +47,8 @@ def load_rig_controllers_backward_compatibility(filepath: str) -> rua_rig_type.R
         if search == "all_action":
             search = "all_actions"
         sections: List[Union[
-            rua_rig_type.ReplaceSection, rua_rig_type.RemoveSection, rua_rig_type.RemoveStartingChannelSection,
+            rua_rig_type.ReplaceSection, rua_rig_type.RemoveSection,
+            rua_rig_type.RemoveStartingChannelSection, rua_rig_type.RemoveDeformBonesSection,
         ]] = []
         for key, value in task.items():
             if key in ("replace_channel_operations", "replace_bone_operations"):
@@ -64,5 +65,10 @@ def load_rig_controllers_backward_compatibility(filepath: str) -> rua_rig_type.R
                 sections.append(rua_rig_type.RemoveStartingChannelSection(
                     rua_json_utils.parse_starting_prefixes(value, f"{location}.{key}"),
                 ))
+            elif key == "remove_deform_bones":
+                if not isinstance(value, bool):
+                    raise ValueError(f"{location}.remove_deform_bones: expected a boolean.")
+                if value:
+                    sections.append(rua_rig_type.RemoveDeformBonesSection())
         tasks.append(rua_rig_type.RigControllerUpdateTask(description, sections, search))
     return rua_rig_type.RigControllersBackwardCompatibility(tasks)

@@ -136,6 +136,14 @@ def update_action_backward_compatibility(
     print("Starting action update backward compatibility...")
 
     for task, actions in task_actions:
+        deform_bone_paths: List[str] = []
+        if any(isinstance(section, rua_rig.rua_rig_type.RemoveDeformBonesSection) for section in task.sections):
+            if armature is None or not isinstance(armature.data, bpy.types.Armature):
+                raise ValueError("An armature is required to remove deform-bone action channels.")
+            deform_bone_paths = [
+                _controller_data_path(bone.name)
+                for bone in armature.data.bones if bone.use_deform
+            ]
         for action in actions:
             if action.library:
                 continue
@@ -143,6 +151,9 @@ def update_action_backward_compatibility(
             for section in task.sections:
                 if isinstance(section, rua_rig.rua_rig_type.RemoveStartingChannelSection):
                     rig_updater.remove_action_curve_by_data_path(action, section.prefixes, starts_with=True)
+                    continue
+                if isinstance(section, rua_rig.rua_rig_type.RemoveDeformBonesSection):
+                    rig_updater.remove_action_curve_by_data_path(action, deform_bone_paths)
                     continue
                 is_channel = section.target == "channel"
                 for operation in section.operations:

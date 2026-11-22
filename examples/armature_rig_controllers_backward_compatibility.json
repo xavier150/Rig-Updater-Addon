@@ -9,6 +9,11 @@
       ]
     },
     {
+      "description": "Remove all deform bones that should not be animated. (Switch to true if your seperate deform bones from control bones)",
+      "action_search": "revelant_actions",
+      "remove_deform_bones": false
+    },
+    {
       "description": "Update left-hand controllers.",
       "action_search": "revelant_actions",
       "replace_channel_operations": [

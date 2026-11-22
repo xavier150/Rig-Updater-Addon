@@ -154,7 +154,8 @@ Rig controller configuration used to update the blender actions:
       ],
       "remove_bone_operations": [
         {"old": ["c_Layer_Body"]}
-      ]
+      ],
+      "remove_deform_bones": true
     }
   ]
 }
@@ -167,6 +168,9 @@ so channel paths still match the old bone names. Channel operations match full
 data paths, while bone operations apply to all channels of the named bone.
 `remove_starting_channel_operations` removes channels whose full data path starts
 with any prefix in the non-empty `starts_with` list; the match is case-sensitive.
+`remove_deform_bones: true` removes action channels for every bone on the target
+armature whose `use_deform` property is enabled. It requires the target armature,
+just like action searches other than `all_actions`.
 
 Each rig update task must select its actions with `action_search`:
 
