@@ -7,13 +7,13 @@ This addon was initially created for [MMVS video game](https://github.com/xavier
 
 # How it Works
 Once you create a new rig version with many changes, this addon helps you update related data to the new rig version for backward compatibility.
-You will create three config JSON files: 
+Create three JSON configuration files:
 
-- **Deform** Used to define rules for deform bones updates.
-- **Rig** Used to define rules for controllers and channel updates.
-- **Scene** Used to define rules for scene updates.
+- **Deform**: rules for deform bones and mesh weights.
+- **Rig**: rules for animation controllers and channels.
+- **Scene**: rules for scene scale and linked libraries.
 
-Once it done you can use the **Rig Updater > Actions** panel to apply the updates defined in your configuration files.
+Use **Rig Updater > Actions** to apply the rules.
 
 # Features
 
@@ -31,7 +31,7 @@ You can update the weights data of meshes using the rules defined in your Deform
 <img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/skin/update_mesh_skin_weight_result.webp" alt="Update Mesh Skin Weight Result" width="auto" height="80%">
 
 - `Update Weights (Auto)` updates mesh descendants of the target armature.
-- `Update Weight (Select)` updates selected meshes, whether or not they are parented to the armature.
+- `Update Weight (Select)` updates selected meshes, parented or not, using the active armature's Mesh Weights JSON.
 
 ## Libraries Update
 You can update scene libraries using the rules defined in your Scene JSON configuration.
@@ -50,46 +50,28 @@ You can update the scene scale according to the rules defined in your Scene JSON
 
 - `Update Scene Scale` updates the scene unit scale and optionally rescales object positions, animation location channels, rig data, constraints, and viewport settings according to the scene rescale rules.
 
-
 This is mainly useful with Unreal Engine pipeline when you switch from FBX to glTF file formats to export assets:
 - FBX with Blender requires to use unit scale at 0.01.
 - glTF fix that requirement and uses unit scale at 1.0.
 
 You can now set the target unit scale to 1.0 and update the scene accordingly to match the glTF export requirements.
 
+## Checks Actions
+Check action related to an armature and display the results in the system console.
 
+<img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/animations/check_action_result.webp" alt="Check Action Result" width="auto" height="80%">
 
---------------------
+## Checks Weights
+Check meshes weights related to an armature and display the results in the system console.
 
+<img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/skin/check_weights_result.webp" alt="Check Weights Result" width="auto" height="80%">
 
-In the 3D View sidebar, open **Rig Updater > Config**:
+# Configuration JSON
 
-Here you will be able to setup Json configuration to define how the addon updates rigs and mesh skin weights.
-You can found example json files in the `examples` folder of this repository.
-
-Relative JSON paths (`//...`) on linked armatures or inherited by library overrides
-are resolved from the source library's `.blend` file. Paths changed locally on an
-override are resolved from the current `.blend` file.
-
-In **Rig Updater > Actions**, you will find buttons to update scene libraries,
-scene unit scale, mesh skin weights and animation actions for backward compatibility.
-
-- The `Update Scene Libraries` button reloads libraries or relinks collections using the scene rules.
-- The `Update Scene Scale` button updates the scene unit scale and optionally rescales object positions, animation location channels, rig data, constraints and viewport settings.
-- `Update Weights (Auto)` updates mesh descendants of the target armature.
-  `Update Weight (Select)` updates selected meshes, whether or not they are
-  parented to the armature. Keep the armature active; its Mesh Weights JSON
-  supplies the rules for both buttons.
-<img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/skin/update_mesh_skin_weight_result.webp" alt="Update Mesh Skin Weight Result" width="auto" height="80%">
-
-- The `Update Actions` button updates animation actions for an armature.
-
-In **Rig Updater > Check**, you can check mesh weights and action channels.
-**Check Meshes Weights (Active)** and **Check Action (Active)** check the active
-armature. **Check Meshes Weights (All)** and **Check Actions (All)** check every
-armature in the scene. Results are listed in the system console.
-
-## Configuration Json.
+Choose the files in **3D View > Sidebar > Rig Updater > Config**. Examples are in
+the `examples` folder. Relative paths (`//...`) on linked armatures and inherited
+overrides resolve from the source library; locally changed override paths resolve
+from the current `.blend` file.
 
 Set **Scene Rules JSON** in Config to use the scene rules example in `examples`.
 
