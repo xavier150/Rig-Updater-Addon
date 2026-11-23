@@ -17,13 +17,14 @@ def load_scene_rules_backward_compatibility(filepath: str) -> rua_scene_type.Sce
     document = rua_json_utils.require_dict(
         rua_json_utils.load_document(filepath), "JSON", {"scene_rescale_rules", "libraries_update_rules"},
     )
-    scale_rules = rua_json_utils.require_dict(
-        document["scene_rescale_rules"], "scene_rescale_rules",
-        {
-            "target_unit_scale", "scale_object_position", "scale_animation_location_channels",
-            "scale_rig", "scale_user_view",
-        },
-    )
+    scale_value = document["scene_rescale_rules"]
+    scale_keys = {
+        "target_unit_scale", "scale_object_position", "scale_animation_location_channels",
+        "scale_rig", "scale_user_view",
+    }
+    if isinstance(scale_value, dict) and "scale_constraints" in scale_value:
+        scale_keys.add("scale_constraints")
+    scale_rules = rua_json_utils.require_dict(document["scene_rescale_rules"], "scene_rescale_rules", scale_keys)
     scale = scale_rules["target_unit_scale"]
     scale_property = bpy.types.UnitSettings.bl_rna.properties["scale_length"]
     if (
@@ -35,8 +36,11 @@ def load_scene_rules_backward_compatibility(filepath: str) -> rua_scene_type.Sce
             f"{scale_property.hard_min} and {scale_property.hard_max}." # type: ignore
         )
     scale_options: Dict[str, bool] = {}
-    for name in ("scale_object_position", "scale_animation_location_channels", "scale_rig", "scale_user_view"):
-        value = scale_rules[name]
+    for name in (
+        "scale_object_position", "scale_animation_location_channels", "scale_rig",
+        "scale_user_view", "scale_constraints",
+    ):
+        value = scale_rules.get(name, True) if name == "scale_constraints" else scale_rules[name]
         if not isinstance(value, bool):
             raise ValueError(f"scene_rescale_rules.{name}: expected a boolean.")
         scale_options[name] = value
@@ -45,7 +49,7 @@ def load_scene_rules_backward_compatibility(filepath: str) -> rua_scene_type.Sce
         rua_scene_type.SceneRescaleRules(
             float(scale), scale_options["scale_object_position"],
             scale_options["scale_animation_location_channels"], scale_options["scale_rig"],
-            scale_options["scale_user_view"],
+            scale_options["scale_user_view"], scale_options["scale_constraints"],
         ), tasks,
     )
 
@@ -84,6 +88,23 @@ def update_scene_scale(scene: bpy.types.Scene, configuration: rua_scene_type.Sce
             bbpl.scene.scale_utils.scale_rigs_data(
                 scale_factor, white_list=objects, scene_only=True,
             )
+        if rules.scale_constraints:
+            for obj in objects:
+                if obj.library is not None:
+                    continue
+                constraints = list(obj.constraints)
+                if obj.pose is not None:
+                    constraints.extend(
+                        constraint for bone in obj.pose.bones for constraint in bone.constraints
+                    )
+                for constraint in constraints:
+                    if (
+                        isinstance(constraint, bpy.types.ChildOfConstraint)
+                        and rua_scene_lib_utils.is_local_constraint(constraint)
+                    ):
+                        matrix = constraint.inverse_matrix.copy()
+                        matrix.translation *= scale_factor
+                        constraint.inverse_matrix = matrix
         if rules.scale_user_view:
             bbpl.scene.scale_utils.scale_user_view(scale_factor)
     unit_settings.scale_length = rules.target_unit_scale

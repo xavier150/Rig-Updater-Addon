@@ -10,7 +10,7 @@ import bpy
 from mathutils import Matrix
 
 from ... import rua_scene_type
-from ..rua_scene_lib_utils import absolute_path, path_key, restore_selection
+from ..rua_scene_lib_utils import absolute_path, is_local_constraint, path_key, restore_selection
 
 
 def _collection_tree(root: bpy.types.Collection) -> List[bpy.types.Collection]:
@@ -324,12 +324,12 @@ def _relink_collection(
         for obj in local_objects:
             # Copying an object can change constraint override flags.
             bone_constraints = {
-                bone.name: [constraint.name for constraint in bone.constraints if not constraint.is_override_data]
+                bone.name: [constraint.name for constraint in bone.constraints if is_local_constraint(constraint)]
                 for bone in obj.pose.bones
             } if obj.pose is not None else {}
             snapshots.append(_ObjectSnapshot(
                 obj.name, old_names[obj], obj.copy(),
-                [constraint.name for constraint in obj.constraints if not constraint.is_override_data],
+                [constraint.name for constraint in obj.constraints if is_local_constraint(constraint)],
                 {name: constraints for name, constraints in bone_constraints.items() if constraints},
             ))
         references, parent_matrices = _capture_object_references(old_names, snapshots)

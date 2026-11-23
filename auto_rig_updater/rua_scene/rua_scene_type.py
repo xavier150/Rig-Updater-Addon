@@ -13,6 +13,7 @@ class SceneRescaleRules:
     scale_animation_location_channels: bool
     scale_rig: bool
     scale_user_view: bool
+    scale_constraints: bool = True
 
 
 @dataclasses.dataclass(frozen=True)

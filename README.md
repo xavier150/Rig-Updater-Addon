@@ -17,7 +17,7 @@ In **Rig Updater > Actions**, you will find buttons to update scene libraries,
 scene unit scale, mesh skin weights and animation actions for backward compatibility.
 
 - The `Update Scene Libraries` button reloads libraries or relinks collections using the scene rules.
-- The `Update Scene Scale` button updates the scene unit scale and optionally rescales object positions, animation location channels, rig data and viewport settings.
+- The `Update Scene Scale` button updates the scene unit scale and optionally rescales object positions, animation location channels, rig data, constraints and viewport settings.
 - `Update Weights (Auto)` updates mesh descendants of the target armature.
   `Update Weight (Select)` updates selected meshes, whether or not they are
   parented to the armature. Keep the armature active; its Mesh Weights JSON
@@ -42,7 +42,8 @@ Set **Scene Rules JSON** in Config to use the scene rules example in `examples`.
     "scale_object_position": true,
     "scale_animation_location_channels": true,
     "scale_rig": false,
-    "scale_user_view": true
+    "scale_user_view": true,
+    "scale_constraints": true
   },
   "libraries_update_rules": {
     "reload_tasks": [
@@ -65,7 +66,8 @@ Set **Scene Rules JSON** in Config to use the scene rules example in `examples`.
 }
 ```
 
-The four rescale options are required booleans; set them to `false` to change only
+The four original rescale options are required booleans. `scale_constraints` is
+an optional boolean, defaulting to `true` when omitted; set all options to `false` to change only
 the unit scale. Enabled data is multiplied by the old unit scale divided by the
 target unit scale. `scale_object_position` scales position and object scale only
 on local root objects (objects without a parent) in the current scene, including
@@ -73,6 +75,10 @@ library overrides and ordinary objects such as a Cube. Children follow their
 parent without changing their local transforms; directly linked objects are not rescaled.
 Rig data is limited to the current scene; animation location channels are updated
 in all actions in the file.
+`scale_constraints` rescales the inverse matrix translation of local Child Of
+constraints on objects and pose bones in the scene, including constraints added
+locally to library overrides. Linked objects and inherited override constraints
+are not changed. This option is independent of `scale_rig`.
 `scale_user_view` rescales the pivot and viewing distance outside camera view,
 plus the clipping start/end distances, in all saved 3D viewports, including quad views.
 It does not move camera objects.

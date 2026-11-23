@@ -12,6 +12,25 @@ from ... import rua_json_utils
 from .. import rua_scene_type
 
 
+def is_local_constraint(constraint: bpy.types.Constraint) -> bool:
+    owner = cast(bpy.types.Object, constraint.id_data)
+    if cast(Optional[bpy.types.Library], owner.library) is not None or constraint.is_override_data:
+        return False
+    # Newly created overrides in Blender 3.6 can lack inherited constraint flags.
+    if owner.override_library is not None:
+        reference = owner.override_library.reference
+        if isinstance(reference, bpy.types.Object):
+            reference_constraints: List[bpy.types.Constraint] = list(reference.constraints)
+            if reference.pose is not None:
+                reference_constraints.extend(
+                    item for bone in reference.pose.bones for item in bone.constraints
+                )
+            path = constraint.path_from_id()
+            if any(item.path_from_id() == path for item in reference_constraints):
+                return False
+    return True
+
+
 def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdateRules:
     if not isinstance(value, dict):
         raise ValueError("libraries_update_rules: expected an object.")

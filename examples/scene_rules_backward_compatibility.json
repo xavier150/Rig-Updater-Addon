@@ -4,7 +4,8 @@
     "scale_object_position": true,
     "scale_animation_location_channels": true,
     "scale_rig": false,
-    "scale_user_view": true
+    "scale_user_view": true,
+    "scale_constraints": true
   },
   "libraries_update_rules": {
     "collection_relink_tasks": [
