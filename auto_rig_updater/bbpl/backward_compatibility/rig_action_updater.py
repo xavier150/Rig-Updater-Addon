@@ -7,7 +7,7 @@
 #  https://github.com/xavier150/BBPL
 # ----------------------------------------------
 
-from typing import TYPE_CHECKING, Callable, Iterator, List, Optional, Set, Tuple, cast
+from typing import TYPE_CHECKING, Callable, Dict, Iterator, List, Optional, Set, Tuple, cast
 
 import bpy
 
@@ -53,6 +53,7 @@ class RigActionUpdater:
         self, action: bpy.types.Action, old_data_paths: List[str], new_data_path: str,
         remove_if_already_exists: bool = False, show_debug: bool = False, *,
         conflit_resolution: Optional[str] = None, exact_match: bool = False,
+        group_name_replacements: Optional[Dict[str, Tuple[str, str]]] = None,
     ) -> None:
         """
         Update the data paths of FCurves in a given action by replacing old data paths with a new one.
@@ -65,6 +66,7 @@ class RigActionUpdater:
                 conflit_resolution is not specified.
             conflit_resolution (str, optional): One of CONFLIT_RESOLUTIONS.
             exact_match (bool, optional): Match the entire data path instead of a substring.
+            group_name_replacements (dict, optional): Map old bone data paths to their old and new group names.
 
         Returns:
             None
@@ -76,6 +78,7 @@ class RigActionUpdater:
         for fcurves in self._fcurve_collections(action):
             self._update_fcurve_collection(
                 action, fcurves, old_data_paths, new_data_path, conflit_resolution, show_debug, exact_match,
+                group_name_replacements,
             )
 
     def _update_fcurve_collection(
@@ -87,6 +90,7 @@ class RigActionUpdater:
         conflit_resolution: str,
         show_debug: bool,
         exact_match: bool,
+        group_name_replacements: Optional[Dict[str, Tuple[str, str]]],
     ) -> None:
         cache_action_fcurves = [(fcurve, fcurve.as_pointer()) for fcurve in fcurves]
         # A conflicting destination can also be present later in the snapshot.
@@ -121,6 +125,14 @@ class RigActionUpdater:
                         removed_pointers.add(existing.as_pointer())
                         fcurves.remove(existing)
                         self.remove_fcurve += 1
+                    group_replacement = (
+                        group_name_replacements.get(old_data_path)
+                        if group_name_replacements is not None else None
+                    )
+                    if group_replacement is not None:
+                        group = action_fcurve.group
+                        if group is not None and group.name == group_replacement[0]:
+                            group.name = group_replacement[1]
                     action_fcurve.data_path = new_target
                     if self.print_log or show_debug:
                         print(f'"{current_target}" updated to "{new_target}" in {action.name} action.')
