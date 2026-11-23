@@ -17,7 +17,7 @@ from .rua_scene_lib import rua_scene_lib_utils
 class RUA_OT_UpdateSceneLibraries(bpy.types.Operator):
     bl_idname = "rua.update_scene_libraries"
     bl_label = "Update Scene Libraries"
-    bl_description = "Reload libraries or relink collections using the scene rules"
+    bl_description = "Reload libraries or relink collections from the Scene Rules JSON"
 
     def execute(self, context: bpy.types.Context) -> "Set[rna_enums.OperatorReturnItems]":
         scene = context.scene
@@ -43,7 +43,7 @@ class RUA_OT_UpdateSceneLibraries(bpy.types.Operator):
 class RUA_OT_UpdateSceneScale(bpy.types.Operator):
     bl_idname = "rua.update_scene_scale"
     bl_label = "Update Scene Scale"
-    bl_description = "Update the scene unit scale using the scene rules"
+    bl_description = "Set the scene unit scale and rescale enabled data"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context: bpy.types.Context) -> "Set[rna_enums.OperatorReturnItems]":

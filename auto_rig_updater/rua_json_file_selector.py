@@ -42,7 +42,7 @@ def _get_owner(
 class RUA_OT_SelectJsonFile(bpy.types.Operator):
     bl_idname = "rua.select_json_file"
     bl_label = "Select JSON File"
-    bl_description = "Select a JSON configuration file"
+    bl_description = "Choose a JSON configuration file"
 
     if TYPE_CHECKING:
         filepath: str

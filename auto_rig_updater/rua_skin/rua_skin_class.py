@@ -66,14 +66,14 @@ def _check_armatures(operator: bpy.types.Operator, armatures: List[bpy.types.Obj
 class RUA_OT_CheckMeshesWeights(bpy.types.Operator):
     bl_idname = "rua.check_meshes_weights"
     bl_label = "Check Meshes Weights (Active)"
-    bl_description = "Warn about used vertex groups with no matching bone in the target armature"
+    bl_description = "Find used mesh groups with no matching bone for the target armature"
 
     if TYPE_CHECKING:
         target_object: str
     else:
         target_object: bpy.props.StringProperty(
             name="Target Object",
-            description="Armature object name; leave empty to use the active armature",
+            description="Armature to process; defaults to the active armature",
             default="",
             options={'SKIP_SAVE'},
         )
@@ -100,7 +100,7 @@ class RUA_OT_CheckMeshesWeights(bpy.types.Operator):
 class RUA_OT_CheckMeshesWeightsAll(bpy.types.Operator):
     bl_idname = "rua.check_meshes_weights_all"
     bl_label = "Check Meshes Weights (All)"
-    bl_description = "Warn about used vertex groups with no matching bone across all armatures in the scene"
+    bl_description = "Find used mesh groups with no matching bone across scene armatures"
 
     def execute(self, context: bpy.types.Context) -> "Set[rna_enums.OperatorReturnItems]":
         if context.scene is None:
@@ -113,7 +113,7 @@ class RUA_OT_CheckMeshesWeightsAll(bpy.types.Operator):
 class RUA_OT_UpdateArmatureDeformBones(bpy.types.Operator):
     bl_idname = "rua.update_armature_deform_bones"
     bl_label = "Update Armature Deform Bones"
-    bl_description = "Rename armature bones using the configured mesh weight compatibility rules"
+    bl_description = "Rename armature bones using Mesh Weights JSON rules"
     bl_options = {'REGISTER', 'UNDO'}
 
     if TYPE_CHECKING:
@@ -121,7 +121,7 @@ class RUA_OT_UpdateArmatureDeformBones(bpy.types.Operator):
     else:
         target_object: bpy.props.StringProperty(
             name="Target Object",
-            description="Armature object name; leave empty to use the active armature",
+            description="Armature to process; defaults to the active armature",
             default="",
             options={'SKIP_SAVE'},
         )
@@ -180,7 +180,7 @@ def _update_meshes_weights(
 class RUA_OT_UpdateMeshesWeightsBackwardCompatibility(bpy.types.Operator):
     bl_idname = "rua.update_meshes_weights_backward_compatibility"
     bl_label = "Update Weights (Auto)"
-    bl_description = "Update vertex groups on mesh descendants of the target armature using its compatibility rules"
+    bl_description = "Update descendant meshes using the armature's Mesh Weights JSON"
     bl_options = {'REGISTER', 'UNDO'}
 
     if TYPE_CHECKING:
@@ -188,7 +188,7 @@ class RUA_OT_UpdateMeshesWeightsBackwardCompatibility(bpy.types.Operator):
     else:
         target_object: bpy.props.StringProperty(
             name="Target Object",
-            description="Armature object name; leave empty to use the active armature",
+            description="Armature to process; defaults to the active armature",
             default="",
             options={'SKIP_SAVE'},
         )
@@ -222,7 +222,7 @@ class RUA_OT_UpdateMeshesWeightsBackwardCompatibility(bpy.types.Operator):
 class RUA_OT_UpdateMeshesWeightsBackwardCompatibilitySelectOnly(bpy.types.Operator):
     bl_idname = "rua.update_meshes_weights_backward_compatibility_select_only"
     bl_label = "Update Weight (Select)"
-    bl_description = "Update selected meshes using the active armature's compatibility rules, regardless of parenting"
+    bl_description = "Update selected meshes, parented or not, using the active armature's Mesh Weights JSON"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context: bpy.types.Context) -> "Set[rna_enums.OperatorReturnItems]":
@@ -233,14 +233,14 @@ class RUA_OT_UpdateMeshesWeightsBackwardCompatibilitySelectOnly(bpy.types.Operat
             self.report({'WARNING'}, message)
             return {'CANCELLED'}
 
-        objects = [obj for obj in context.selected_objects if obj.type == 'MESH']
+        objects = [obj for obj in context.selected_objects or [] if obj.type == 'MESH']
         if not objects:
             message = "Select at least one mesh to update its weights."
             print(bpl.color_set.yellow(f"[Rig Updater] Warning: {message}"))
             self.report({'WARNING'}, message)
             return {'CANCELLED'}
         for obj in objects:
-            if obj.data.is_editmode:
+            if isinstance(obj.data, bpy.types.Mesh) and obj.data.is_editmode:
                 message = f"Exit Edit Mode on '{obj.name}' before updating its skin weights."
                 print(bpl.color_set.yellow(f"[Rig Updater] Warning: {message}"))
                 self.report({'WARNING'}, message)

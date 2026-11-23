@@ -49,7 +49,7 @@ def register() -> None:
         "rua_armature_mesh_weight_backward_compatibility",
         bpy.props.StringProperty( # type: ignore
             name="Mesh Weights JSON",
-            description="JSON migration rules for this armature's mesh vertex groups",
+            description="Rules for updating mesh weights and deform bone names",
             options=options,  # type: ignore
             default="",
         ),
@@ -59,7 +59,7 @@ def register() -> None:
         "rua_armature_rig_controllers_backward_compatibility",
         bpy.props.StringProperty( # type: ignore
             name="Rig Controllers JSON",
-            description="JSON migration rules for animation FCurve data paths",
+            description="Rules for updating animation channels and rig controllers",
             options=options,  # type: ignore
             default="",
         ),

@@ -37,7 +37,7 @@ def register() -> None:
         "rua_scene_rules_backward_compatibility",
         bpy.props.StringProperty(  # type: ignore
             name="Scene Rules JSON",
-            description="JSON migration rules for scene units and linked libraries",
+            description="Rules for scene scale and linked library updates",
             options=options,  # type: ignore
             default="",
         ),

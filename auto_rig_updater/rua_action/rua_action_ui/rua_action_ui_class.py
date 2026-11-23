@@ -68,14 +68,14 @@ def _check_armatures(operator: bpy.types.Operator, armatures: List[bpy.types.Obj
 class RUA_OT_CheckActions(bpy.types.Operator):
     bl_idname = "rua.check_actions"
     bl_label = "Check Action (Active)"
-    bl_description = "Check configured actions against the target armature"
+    bl_description = "Check configured action channels for the target armature"
 
     if TYPE_CHECKING:
         target_object: str
     else:
         target_object: bpy.props.StringProperty(
             name="Target Object",
-            description="Armature object name; leave empty to use the active armature",
+            description="Armature to process; defaults to the active armature",
             default="",
             options={'SKIP_SAVE'},
         )
@@ -94,7 +94,7 @@ class RUA_OT_CheckActions(bpy.types.Operator):
 class RUA_OT_CheckActionsAll(bpy.types.Operator):
     bl_idname = "rua.check_actions_all"
     bl_label = "Check Actions (All)"
-    bl_description = "Check configured actions against every armature in the scene"
+    bl_description = "Check configured action channels for every armature in the scene"
 
     def execute(self, context: bpy.types.Context) -> "Set[rna_enums.OperatorReturnItems]":
         if context.scene is None:
@@ -107,7 +107,7 @@ class RUA_OT_CheckActionsAll(bpy.types.Operator):
 class RUA_OT_UpdateActionsBackwardCompatibility(bpy.types.Operator):
     bl_idname = "rua.update_actions_backward_compatibility"
     bl_label = "Update Actions (Active)"
-    bl_description = "Update local animation actions for the newer rig"
+    bl_description = "Update this armature's configured local actions"
     bl_options = {'REGISTER', 'UNDO'}
 
     if TYPE_CHECKING:
@@ -115,7 +115,7 @@ class RUA_OT_UpdateActionsBackwardCompatibility(bpy.types.Operator):
     else:
         target_object: bpy.props.StringProperty(
             name="Target Object",
-            description="Armature object name; leave empty to use the active armature",
+            description="Armature to process; defaults to the active armature",
             default="",
             options={'SKIP_SAVE'},
         )
@@ -154,7 +154,7 @@ def _update_actions_backward_compatibility(operator: bpy.types.Operator, armatur
 class RUA_OT_UpdateActionsBackwardCompatibilityAll(bpy.types.Operator):
     bl_idname = "rua.update_actions_backward_compatibility_all"
     bl_label = "Update Actions (All)"
-    bl_description = "Update local animation actions for every armature in the scene"
+    bl_description = "Update configured local actions for every armature in the scene"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context: bpy.types.Context) -> "Set[rna_enums.OperatorReturnItems]":
