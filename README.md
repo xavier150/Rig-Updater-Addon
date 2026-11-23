@@ -1,8 +1,66 @@
 # Rig-Updater-Addon
 
-A Blender addon that updates animation actions and mesh skin weights for a new
-rig version, helping maintain compatibility with older rigs.
-Initially created for [MMVS video game](https://github.com/xavier150/MMVS) rigs.
+A Blender addon that manages rig backward compatibility by updating scenes, animation actions, and meshes skin weights.
+This addon was initially created for [MMVS video game](https://github.com/xavier150/MMVS).
+
+-------------
+
+# How it Works
+Once you create a new rig version with many changes, this addon helps you update related data to the new rig version for backward compatibility.
+You will create three config JSON files: 
+
+- **Deform** Used to define rules for deform bones updates.
+- **Rig** Used to define rules for controllers and channel updates.
+- **Scene** Used to define rules for scene updates.
+
+Once it done you can use the **Rig Updater > Actions** panel to apply the updates defined in your configuration files.
+
+# Features
+
+## Animation Update
+You can update animations by updating the channels according to the rules defined in your Rig JSON configuration.
+
+<img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/animations/update_action_result.webp" alt="Update Action Result" width="auto" height="80%">
+
+- `Update Actions (Active)` updates all action related to the active armature.
+- `Update Actions (All)` updates all actions related to all armatures in the scene.
+
+## Weights Update
+You can update the weights data of meshes using the rules defined in your Deform JSON configuration.
+
+<img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/skin/update_mesh_skin_weight_result.webp" alt="Update Mesh Skin Weight Result" width="auto" height="80%">
+
+- `Update Weights (Auto)` updates mesh descendants of the target armature.
+- `Update Weight (Select)` updates selected meshes, whether or not they are parented to the armature.
+
+## Libraries Update
+You can update scene libraries using the rules defined in your Scene JSON configuration.
+
+<img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/libraries/update_scene_libraries_result.webp" alt="Update Scene Libraries Result" width="auto" height="80%">
+
+- `Update Scene Libraries` updates all scene libraries according to the scene rules config.
+You can specify the collection to use and action specific to the relinking like object rescale or transforms adjustments.
+It also keep the animation data including NLA tracks and keep all the constraints with the updated bones. 
+For the constraints it uses the Rig JSON configuration from the new armature from the updated library.
+
+## Scene rescale
+You can update the scene scale according to the rules defined in your Scene JSON configuration.
+
+<img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/scene/update_scene_scale_result.webp" alt="Update Scene Scale Result" width="auto" height="80%">
+
+- `Update Scene Scale` updates the scene unit scale and optionally rescales object positions, animation location channels, rig data, constraints, and viewport settings according to the scene rescale rules.
+
+
+This is mainly useful with Unreal Engine pipeline when you switch from FBX to glTF file formats to export assets:
+- FBX with Blender requires to use unit scale at 0.01.
+- glTF fix that requirement and uses unit scale at 1.0.
+
+You can now set the target unit scale to 1.0 and update the scene accordingly to match the glTF export requirements.
+
+
+
+--------------------
+
 
 In the 3D View sidebar, open **Rig Updater > Config**:
 
@@ -58,6 +116,7 @@ Set **Scene Rules JSON** in Config to use the scene rules example in `examples`.
         "description": "Update rig library from v3 and v4 to v5.",
         "old": ["//rig_v3.blend", "//rig_v4.blend"],
         "new": "//rig_v5.blend",
+        "path_type": "as_before",
         "old_collection": "my_rig_collection",
         "new_collection": "my_rig_collection"
       }
@@ -93,6 +152,18 @@ Collection relinking requires Blender 3.5 or newer. Convert collection instances
 to library overrides before relinking. Local drivers,
 NLA strips other than action clips, and clips with modifiers cannot currently be transferred.
 Libraries referenced by another linked library must be updated in their parent file.
+
+After collection relinking, unused linked data from the replaced libraries and
+their dependencies is removed immediately. Shared dependencies still used by
+another collection or library are retained; unrelated orphan data is not purged.
+
+Optional `path_type` in each `collection_relink_tasks` entry controls the direct
+destination library's stored path: `"as_before"` (the default) keeps the replaced
+library's relative or absolute path type, `"relative"` stores a path relative to
+the current `.blend`, and `"absolute"` stores an absolute path. Relative paths
+require saving the current `.blend` first and a destination on the same drive.
+Paths inside nested libraries remain
+defined by those libraries.
 
 Optional `object_scale_multipliers` and `object_location_multipliers` objects in a
 relink task multiply local scale and location after relinking, for example
@@ -193,6 +264,8 @@ Operations are applied in the order their sections appear in the JSON. It is
 recommended to place `replace_channel_operations` before `replace_bone_operations`
 so channel paths still match the old bone names. Channel operations match full
 data paths, while bone operations apply to all channels of the named bone.
+When a bone replacement is applied, channel groups named after the old bone are
+renamed to the new bone name as well.
 `remove_starting_channel_operations` removes channels whose full data path starts
 with any prefix in the non-empty `starts_with` list; the match is case-sensitive.
 `remove_deform_bones: true` removes action channels for every bone on the target
