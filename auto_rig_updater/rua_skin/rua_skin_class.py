@@ -159,10 +159,28 @@ class RUA_OT_UpdateArmatureDeformBones(bpy.types.Operator):
         return {'FINISHED'}
 
 
+def _update_meshes_weights(
+    operator: bpy.types.Operator, armature: bpy.types.Object, objects: List[bpy.types.Object],
+) -> "Set[rna_enums.OperatorReturnItems]":
+    filepath = rua_armature.rua_armature_utils.get_config_filepath(
+        armature,
+        rua_armature.rua_armature_props.get_object_armature_mesh_weight_backward_compatibility(armature),
+        property_name="rua_armature_mesh_weight_backward_compatibility",
+    )
+    error = rua_json_utils.get_config_file_error(filepath)
+    if error is not None:
+        print(bpl.color_set.yellow(f"[Rig Updater] Warning: {error}"))
+        operator.report({'WARNING'}, error)
+        return {'CANCELLED'}
+    configuration = rua_skin_utils.load_mesh_weight_backward_compatibility(filepath)
+    rua_skin_utils.update_meshes_weights_backward_compatibility(objects, configuration)
+    return {'FINISHED'}
+
+
 class RUA_OT_UpdateMeshesWeightsBackwardCompatibility(bpy.types.Operator):
     bl_idname = "rua.update_meshes_weights_backward_compatibility"
-    bl_label = "Update Mesh Weights"
-    bl_description = "Update vertex groups on meshes parented to the target armature for the newer rig"
+    bl_label = "Update Weights (Auto)"
+    bl_description = "Update vertex groups on mesh descendants of the target armature using its compatibility rules"
     bl_options = {'REGISTER', 'UNDO'}
 
     if TYPE_CHECKING:
@@ -198,19 +216,36 @@ class RUA_OT_UpdateMeshesWeightsBackwardCompatibility(bpy.types.Operator):
             return {'CANCELLED'}
 
         objects = rua_skin_utils.get_armature_children_meshes(obj)
-        filepath = rua_armature.rua_armature_utils.get_config_filepath(
-            obj,
-            rua_armature.rua_armature_props.get_object_armature_mesh_weight_backward_compatibility(obj),
-            property_name="rua_armature_mesh_weight_backward_compatibility",
-        )
-        error = rua_json_utils.get_config_file_error(filepath)
-        if error is not None:
-            print(bpl.color_set.yellow(f"[Rig Updater] Warning: {error}"))
-            self.report({'WARNING'}, error)
+        return _update_meshes_weights(self, obj, objects)
+
+
+class RUA_OT_UpdateMeshesWeightsBackwardCompatibilitySelectOnly(bpy.types.Operator):
+    bl_idname = "rua.update_meshes_weights_backward_compatibility_select_only"
+    bl_label = "Update Weight (Select)"
+    bl_description = "Update selected meshes using the active armature's compatibility rules, regardless of parenting"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    def execute(self, context: bpy.types.Context) -> "Set[rna_enums.OperatorReturnItems]":
+        armature = context.object
+        if armature is None or not isinstance(armature.data, bpy.types.Armature):
+            message = "Make an armature active to update the selected meshes."
+            print(bpl.color_set.yellow(f"[Rig Updater] Warning: {message}"))
+            self.report({'WARNING'}, message)
             return {'CANCELLED'}
-        configuration = rua_skin_utils.load_mesh_weight_backward_compatibility(filepath)
-        rua_skin_utils.update_meshes_weights_backward_compatibility(objects, configuration)
-        return {'FINISHED'}
+
+        objects = [obj for obj in context.selected_objects if obj.type == 'MESH']
+        if not objects:
+            message = "Select at least one mesh to update its weights."
+            print(bpl.color_set.yellow(f"[Rig Updater] Warning: {message}"))
+            self.report({'WARNING'}, message)
+            return {'CANCELLED'}
+        for obj in objects:
+            if obj.data.is_editmode:
+                message = f"Exit Edit Mode on '{obj.name}' before updating its skin weights."
+                print(bpl.color_set.yellow(f"[Rig Updater] Warning: {message}"))
+                self.report({'WARNING'}, message)
+                return {'CANCELLED'}
+        return _update_meshes_weights(self, armature, objects)
 
 
 # -------------------------------------------------------------------
@@ -223,6 +258,7 @@ classes = (
     RUA_OT_CheckMeshesWeightsAll,
     RUA_OT_UpdateArmatureDeformBones,
     RUA_OT_UpdateMeshesWeightsBackwardCompatibility,
+    RUA_OT_UpdateMeshesWeightsBackwardCompatibilitySelectOnly,
 )
 
 

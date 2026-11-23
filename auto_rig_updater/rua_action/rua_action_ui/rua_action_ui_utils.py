@@ -18,7 +18,9 @@ def draw(layout: bpy.types.UILayout, context: bpy.types.Context) -> None:
         _, panel = rig_accordion.draw(layout)
         if panel:
             panel.operator("rua.update_armature_deform_bones")
-            panel.operator("rua.update_meshes_weights_backward_compatibility")
+            row = panel.row(align=True)
+            row.operator("rua.update_meshes_weights_backward_compatibility")
+            row.operator("rua.update_meshes_weights_backward_compatibility_select_only")
 
     scene_accordion = bbpl.blender_layout.layout_accordion.get_accordion(context.scene, "rua_scene_action_accordion")
     if scene_accordion:

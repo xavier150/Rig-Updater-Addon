@@ -18,7 +18,10 @@ scene unit scale, mesh skin weights and animation actions for backward compatibi
 
 - The `Update Scene Libraries` button reloads libraries or relinks collections using the scene rules.
 - The `Update Scene Scale` button updates the scene unit scale and optionally rescales object positions, animation location channels, rig data and viewport settings.
-- The `Update Mesh Weights` button updates the weights of an armature's meshes.
+- `Update Weights (Auto)` updates mesh descendants of the target armature.
+  `Update Weight (Select)` updates selected meshes, whether or not they are
+  parented to the armature. Keep the armature active; its Mesh Weights JSON
+  supplies the rules for both buttons.
 <img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/skin/update_mesh_skin_weight_result.webp" alt="Update Mesh Skin Weight Result" width="auto" height="80%">
 
 - The `Update Actions` button updates animation actions for an armature.
