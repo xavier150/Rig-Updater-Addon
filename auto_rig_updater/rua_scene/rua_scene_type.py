@@ -29,6 +29,7 @@ class CollectionRelinkTask(LibraryUpdateTask):
     new_collection: str
     object_scale_multipliers: Dict[str, float] = dataclasses.field(default_factory=dict)
     object_location_multipliers: Dict[str, float] = dataclasses.field(default_factory=dict)
+    path_type: str = "as_before"
 
 
 @dataclasses.dataclass(frozen=True)

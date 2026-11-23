@@ -10,14 +10,14 @@
   "libraries_update_rules": {
     "collection_relink_tasks": [
       {
-        "description": "Update Cobble_Character (v3 and v4 to v5)",
+        "description": "Update old rig to new rig",
         "old": [
-          "M:\\MMVS_ProjectFiles_v2\\SourceAssets\\Characters\\Cobble_Character\\Rig\\v3\\Cobble_Character.blend",
-          "M:\\MMVS_ProjectFiles_v2\\SourceAssets\\Characters\\Cobble_Character\\Rig\\v4\\Cobble_Character.blend"
+          "Path\\To\\My\\OldRig\\OldRig.blend"
         ],
-        "new": "M:\\MMVS_ProjectFiles_v2\\SourceAssets\\Characters\\Cobble_Character\\Rig\\v5\\Cobble_Character.blend",
-        "old_collection": "Cobble_Character_Collection",
-        "new_collection": "Cobble_Character_Collection",
+        "new": "Path\\To\\My\\NewRig\\NewRig.blend",
+        "path_type": "as_before",
+        "old_collection": "MyRig_Collection",
+        "new_collection": "MyRig_Collection",
         "object_scale_multipliers": {
           "Cobble_Character": 100.0
         }

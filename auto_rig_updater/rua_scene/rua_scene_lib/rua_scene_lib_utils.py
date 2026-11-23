@@ -46,7 +46,7 @@ def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdat
             task_keys.update({"old_collection", "new_collection"})
             if isinstance(value, dict):
                 task_keys.update(
-                    key for key in ("object_scale_multipliers", "object_location_multipliers")
+                    key for key in ("object_scale_multipliers", "object_location_multipliers", "path_type")
                     if key in value
                 )
         task = rua_json_utils.require_dict(value, location, task_keys)
@@ -58,6 +58,9 @@ def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdat
         if any(os.path.splitext(path)[1].lower() != ".blend" for path in old_paths + [new_path]):
             raise ValueError(f"{location}: library paths must point to .blend files.")
         if collection:
+            path_type = task.get("path_type", "as_before")
+            if not isinstance(path_type, str) or path_type not in {"as_before", "relative", "absolute"}:
+                raise ValueError(f"{location}.path_type: expected 'as_before', 'relative' or 'absolute'.")
             return rua_scene_type.CollectionRelinkTask(
                 description, old_paths, new_path,
                 rua_json_utils.parse_new_name(task["old_collection"], f"{location}.old_collection"),
@@ -68,6 +71,7 @@ def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdat
                 _parse_object_multipliers(
                     task.get("object_location_multipliers", {}), f"{location}.object_location_multipliers",
                 ),
+                path_type,
             )
         return rua_scene_type.LibraryUpdateTask(description, old_paths, new_path)
 

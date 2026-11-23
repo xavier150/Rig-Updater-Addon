@@ -27,6 +27,49 @@ def _collection_parents(root: bpy.types.Collection) -> List[bpy.types.Collection
     return [parent for parent in candidates if root in parent.children[:]]
 
 
+def _library_dependencies(libraries: Set[bpy.types.Library]) -> Set[bpy.types.Library]:
+    """Include linked dependencies of the libraries being replaced."""
+    libraries = set(libraries)
+    users = bpy.data.user_map()
+    while True:
+        dependencies = {
+            block.library for block, block_users in users.items()
+            if block.library is not None and any(user.library in libraries for user in block_users)
+        }
+        if dependencies <= libraries:
+            return libraries
+        libraries.update(dependencies)
+
+
+def _cleanup_relinked_libraries(libraries: Set[bpy.types.Library]) -> None:
+    """Remove only linked data with no surviving users outside the replaced libraries."""
+    users = bpy.data.user_map()
+    unused = {block for block in users if block.library in libraries}
+    while True:
+        removable = {
+            block for block in unused
+            if not block.use_fake_user and not block.use_extra_user and users[block] <= unused
+        }
+        if removable == unused:
+            break
+        unused = removable
+    retained_libraries = {block.library for block in users if block not in unused}
+    empty_libraries = {
+        library for library in libraries
+        if library not in retained_libraries and not library.use_fake_user
+    }
+    if unused or empty_libraries:
+        bpy.data.batch_remove(ids=unused | empty_libraries)
+
+
+def _relative_library_path(root: bpy.types.Collection, task: rua_scene_type.CollectionRelinkTask) -> bool:
+    if task.path_type != "as_before":
+        return task.path_type == "relative"
+    reference = root.override_library.reference if root.override_library is not None else root
+    library = cast(Optional[bpy.types.Library], reference.library)
+    return library is not None and library.filepath.startswith("//")
+
+
 def _remove_collection_hierarchy(
     root: bpy.types.Collection, objects: Optional[List[bpy.types.Object]] = None,
 ) -> None:
@@ -292,6 +335,7 @@ def _relink_collection(
     active = view_layer.objects.active
     active_name = active.name_full if active is not None else None
     root_name = root.name
+    relative_path = _relative_library_path(root, task)
     local_objects = [obj for obj in old_objects if obj.library is None]
     old_names = {obj: _reference_name(obj) for obj in local_objects}
     if len(set(old_names.values())) != len(old_names):
@@ -342,13 +386,15 @@ def _relink_collection(
         view_layer.update()
 
         destination_path = absolute_path(task.new)
-        with bpy.data.libraries.load(destination_path, link=True) as (source, target):
+        with bpy.data.libraries.load(destination_path, link=True, relative=relative_path) as (source, target):
             if task.new_collection not in source.collections:
                 raise ValueError(f"Collection '{task.new_collection}' was not found in '{destination_path}'.")
             target.collections = [task.new_collection]
         linked = cast(Optional[bpy.types.Collection], target.collections[0])
         if linked is None:
             raise RuntimeError(f"Could not link collection '{task.new_collection}' from '{destination_path}'.")
+        if linked.library is not None:
+            linked.library.filepath = bpy.path.relpath(destination_path) if relative_path else destination_path
         existing = set(bpy.data.collections)
         instance = bpy.data.objects.new(task.new_collection, None)
         instance.instance_type = 'COLLECTION'
@@ -465,6 +511,11 @@ def relink_scene_collections(
                 )
         if matches and not os.path.isfile(destination):
             raise ValueError(f"Destination library was not found: '{destination}'.")
+        if matches and any(_relative_library_path(root, task) for root in matches):
+            if not bpy.data.filepath:
+                raise ValueError("Save the current .blend file before relinking with relative library paths.")
+            # Reject cross-drive relative paths before removing any collection.
+            bpy.path.relpath(destination)
         if matches:
             with bpy.data.libraries.load(destination, link=True) as (source, _):
                 if task.new_collection not in source.collections:
@@ -486,6 +537,12 @@ def relink_scene_collections(
         plans.append((task, matches))
     if bpy.app.version < (3, 5, 0) and any(matches for _, matches in plans):
         raise ValueError("Collection relinking requires Blender 3.5 or newer.")
+    libraries = _library_dependencies({
+        reference.library
+        for root in seen
+        for reference in [root.override_library.reference if root.override_library is not None else root]
+        if reference.library is not None
+    }) if seen else set()
     updated = 0
     for task, matches in plans:
         scenes: Set[bpy.types.Scene] = set()
@@ -493,4 +550,6 @@ def relink_scene_collections(
             scenes.add(_relink_collection(root, task))
             updated += 1
         _apply_object_multipliers(task, scenes)
+    if updated:
+        _cleanup_relinked_libraries(libraries)
     return updated
