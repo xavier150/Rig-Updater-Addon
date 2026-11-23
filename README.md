@@ -6,27 +6,27 @@ This addon was initially created for [MMVS video game](https://github.com/xavier
 -------------
 
 # How it Works
-Once you create a new rig version with many changes, this addon helps you update related data to the new rig version for backward compatibility.
-Create three JSON configuration files:
+Create three JSON configuration files for the new rig:
 
 - **Deform**: rules for deform bones and mesh weights.
 - **Rig**: rules for animation controllers and channels.
 - **Scene**: rules for scene scale and linked libraries.
 
-Use **Rig Updater > Actions** to apply the rules.
+Choose the files in **3D View > Sidebar > Rig Updater > Config**, then run the
+updates from **Rig Updater > Actions**.
 
 # Features
 
 ## Animation Update
-You can update animations by updating the channels according to the rules defined in your Rig JSON configuration.
+Update animation channels using the Rig JSON rules.
 
 <img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/animations/update_action_result.webp" alt="Update Action Result" width="auto" height="80%">
 
-- `Update Actions (Active)` updates all action related to the active armature.
-- `Update Actions (All)` updates all actions related to all armatures in the scene.
+- `Update Actions (Active)` updates configured actions for the active armature.
+- `Update Actions (All)` updates configured actions for every armature in the scene.
 
 ## Weights Update
-You can update the weights data of meshes using the rules defined in your Deform JSON configuration.
+Update mesh weights using the Deform JSON rules.
 
 <img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/skin/update_mesh_skin_weight_result.webp" alt="Update Mesh Skin Weight Result" width="auto" height="80%">
 
@@ -34,46 +34,89 @@ You can update the weights data of meshes using the rules defined in your Deform
 - `Update Weight (Select)` updates selected meshes, parented or not, using the active armature's Mesh Weights JSON.
 
 ## Libraries Update
-You can update scene libraries using the rules defined in your Scene JSON configuration.
+Update scene libraries using the Scene JSON rules.
 
 <img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/libraries/update_scene_libraries_result.webp" alt="Update Scene Libraries Result" width="auto" height="80%">
 
-- `Update Scene Libraries` updates all scene libraries according to the scene rules config.
-You can specify the collection to use and action specific to the relinking like object rescale or transforms adjustments.
-It also keep the animation data including NLA tracks and keep all the constraints with the updated bones. 
-For the constraints it uses the Rig JSON configuration from the new armature from the updated library.
+- `Update Scene Libraries` reloads libraries or relinks collections. Relinking can
+  preserve animation and local constraints, and uses the new rig's JSON files to update constraint bone names.
 
-## Scene rescale
-You can update the scene scale according to the rules defined in your Scene JSON configuration.
+## Scene Scale
+Set the scene unit scale and optionally rescale related data using the Scene JSON rules.
 
 <img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/scene/update_scene_scale_result.webp" alt="Update Scene Scale Result" width="auto" height="80%">
 
-- `Update Scene Scale` updates the scene unit scale and optionally rescales object positions, animation location channels, rig data, constraints, and viewport settings according to the scene rescale rules.
+- `Update Scene Scale` changes the unit scale and applies the enabled rescale options.
 
-This is mainly useful with Unreal Engine pipeline when you switch from FBX to glTF file formats to export assets:
-- FBX with Blender requires to use unit scale at 0.01.
-- glTF fix that requirement and uses unit scale at 1.0.
-
-You can now set the target unit scale to 1.0 and update the scene accordingly to match the glTF export requirements.
+**Example:** FBX workflows often use a unit scale of `0.01`, while glTF uses `1.0`.
 
 ## Checks Actions
 Check action related to an armature and display the results in the system console.
 
 <img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/animations/check_action_result.webp" alt="Check Action Result" width="auto" height="80%">
 
+- `Check Actions (Active)` checks actions for the active armature.
+- `Check Actions (All)` checks actions for every armature in the scene.
+
 ## Checks Weights
 Check meshes weights related to an armature and display the results in the system console.
 
 <img src="https://github.com/xavier150/Rig-Updater-Addon/wiki/images/skin/check_weights_result.webp" alt="Check Weights Result" width="auto" height="80%">
 
+- `Check Meshes Weights (Active)` checks mesh weights for the active armature.
+- `Check Meshes Weights (All)` checks mesh weights for every armature in the scene.
+
 # Configuration JSON
 
-Choose the files in **3D View > Sidebar > Rig Updater > Config**. Examples are in
-the `examples` folder. Relative paths (`//...`) on linked armatures and inherited
-overrides resolve from the source library; locally changed override paths resolve
-from the current `.blend` file.
+For linked armatures and inherited overrides, relative paths (`//...`) resolve
+from the source library. Locally changed override paths resolve from the current
+`.blend` file.
 
-Set **Scene Rules JSON** in Config to use the scene rules example in `examples`.
+## Scene Rules JSON
+
+The file requires `scene_rescale_rules` and `libraries_update_rules`.
+
+### Scene scale
+
+| Parameter | Values | Description |
+|---|---|---|
+| `target_unit_scale` | Number in Blender's supported range (required) | Target unit scale. |
+| `scale_object_position` | `true` / `false` (required) | Scale location and size of local root objects in the scene. |
+| `scale_animation_location_channels` | `true` / `false` (required) | Scale location curves in local actions; linked actions are skipped. |
+| `scale_rig` | `true` / `false` (required) | Scale rig data on objects in the scene. |
+| `scale_user_view` | `true` / `false` (required) | Scale non-camera view distance and viewport clipping. |
+| `scale_constraints` | `true` / `false` (default `true`) | Scale local Child Of constraint offsets. |
+
+Enabled data is multiplied by `old scale / target scale`. Set all options to
+`false` to change only the unit scale. Object scaling skips linked objects;
+constraint scaling also skips inherited constraints.
+
+### Library updates
+
+Include `reload_tasks`, `collection_relink_tasks`, or both in
+`libraries_update_rules`.
+
+| Parameter | Values | Description |
+|---|---|---|
+| `reload_tasks` | Array of tasks (optional) | Reload libraries and refresh editable overrides. |
+| `collection_relink_tasks` | Array of tasks (optional) | Replace collection overrides with a new collection. |
+| `description` | String (required) | Short note for the task. |
+| `old` | Array of `.blend` paths (required) | Source libraries to update. |
+| `new` | `.blend` path (required) | Destination library. |
+| `old_collection`, `new_collection` | Collection names (required for relink tasks) | Collections to replace and use. |
+| `path_type` | `as_before`, `relative`, `absolute` (relink only; default `as_before`) | How to store the destination path. |
+| `object_scale_multipliers` | Object name: positive finite number (relink only; optional) | Multiply local scale after relinking. |
+| `object_location_multipliers` | Object name: positive finite number (relink only; optional) | Multiply local location after relinking. |
+
+Back up the `.blend` before relinking. Collection relinking requires Blender
+3.5+ and library overrides; convert collection instances first. It preserves
+root transforms, animation and local constraints, but does not transfer local
+drivers, non-action NLA strips or clips with modifiers. Update nested libraries
+in their parent file. Unused linked data from replaced libraries is removed;
+shared dependencies are kept. `path_type: "relative"` requires a saved file and
+a destination on the same drive.
+
+Example:
 
 ```json
 {
@@ -86,93 +129,57 @@ Set **Scene Rules JSON** in Config to use the scene rules example in `examples`.
     "scale_constraints": true
   },
   "libraries_update_rules": {
-    "reload_tasks": [
-      {
-        "description": "Update scenes from v3 and v4 to v5.",
-        "old": ["//scene_v3.blend", "//scene_v4.blend"],
-        "new": "//scene_v5.blend"
-      }
-    ],
     "collection_relink_tasks": [
       {
-        "description": "Update rig library from v3 and v4 to v5.",
-        "old": ["//rig_v3.blend", "//rig_v4.blend"],
-        "new": "//rig_v5.blend",
+        "description": "Update old rig to new rig",
+        "old": ["Path\\To\\My\\OldRig\\OldRig.blend"],
+        "new": "Path\\To\\My\\NewRig\\NewRig.blend",
         "path_type": "as_before",
-        "old_collection": "my_rig_collection",
-        "new_collection": "my_rig_collection"
+        "old_collection": "MyRig_Collection",
+        "new_collection": "MyRig_Collection",
+        "object_scale_multipliers": {
+          "Cobble_Character": 100.0
+        }
       }
     ]
   }
 }
 ```
 
-The four original rescale options are required booleans. `scale_constraints` is
-an optional boolean, defaulting to `true` when omitted; set all options to `false` to change only
-the unit scale. Enabled data is multiplied by the old unit scale divided by the
-target unit scale. `scale_object_position` scales position and object scale only
-on local root objects (objects without a parent) in the current scene, including
-library overrides and ordinary objects such as a Cube. Children follow their
-parent without changing their local transforms; directly linked objects are not rescaled.
-Rig data is limited to the current scene; animation location channels are updated
-in all actions in the file.
-`scale_constraints` rescales the inverse matrix translation of local Child Of
-constraints on objects and pose bones in the scene, including constraints added
-locally to library overrides. Linked objects and inherited override constraints
-are not changed. This option is independent of `scale_rig`.
-`scale_user_view` rescales the pivot and viewing distance outside camera view,
-plus the clipping start/end distances, in all saved 3D viewports, including quad views.
-It does not move camera objects.
+## Mesh Weights JSON
 
-`reload_tasks` relocates libraries and refreshes existing editable object overrides.
-`collection_relink_tasks` replaces collection overrides, restores root override world transforms, animation
-and local constraints, and uses the new rig's Rig Controllers and Mesh Weights JSON
-to rename constraint owner and target bones, including targets on the same rig.
-Objects or bones missing from the new collection are
-skipped. Either task list may be omitted. Back up the `.blend` before relinking.
-Collection relinking requires Blender 3.5 or newer. Convert collection instances
-to library overrides before relinking. Local drivers,
-NLA strips other than action clips, and clips with modifiers cannot currently be transferred.
-Libraries referenced by another linked library must be updated in their parent file.
+The file requires an `update_tasks` array. Each task needs a `description` and
+at least one operations list.
 
-After collection relinking, unused linked data from the replaced libraries and
-their dependencies is removed immediately. Shared dependencies still used by
-another collection or library are retained; unrelated orphan data is not purged.
+| Parameter | Values | Description |
+|---|---|---|
+| `description` | String (required) | Short note for the task. |
+| `replace_operations` | Array (optional) of `{old: [names], new: name, conflit_resolution: value}` | Rename or combine vertex groups. |
+| `remove_operations` | Array (optional) of `{old: [names]}` | Remove named groups. |
+| `remove_starting_operations` | Array (optional) of `{starts_with: [prefixes]}` | Remove groups by name prefix. |
 
-Optional `path_type` in each `collection_relink_tasks` entry controls the direct
-destination library's stored path: `"as_before"` (the default) keeps the replaced
-library's relative or absolute path type, `"relative"` stores a path relative to
-the current `.blend`, and `"absolute"` stores an absolute path. Relative paths
-require saving the current `.blend` first and a destination on the same drive.
-Paths inside nested libraries remain
-defined by those libraries.
+`conflit_resolution` values:
 
-Optional `object_scale_multipliers` and `object_location_multipliers` objects in a
-relink task multiply local scale and location after relinking, for example
-`"object_scale_multipliers": {"Cobble_Character": 100.0}` and
-`"object_location_multipliers": {"Sub_StuckZoneProxyFloor": 0.01}`.
-Names match objects in the scene containing the updated collection, inside or
-outside that collection, with or without a parent or override. Each adjustment
-is applied once per object per task, only if the task relinks a collection.
-Missing objects are skipped; directly linked read-only objects are skipped with a warning.
-Without an explicit multiplier, children retain the new library's local transforms.
-Factors must be finite positive numbers. Animation keys and armature data are
-unchanged; children also inherit their parent's transforms. These adjustments are
-independent of `Update Scene Scale`. Animated or
-constrained transforms remain controlled by their animation, drivers and constraints.
+| Value | Description |
+|---|---|
+| `keep_both` | Keep both groups. |
+| `remove_old` | Keep the destination group and remove the old group. |
+| `remove_new` | Replace the destination group with the old group's weights. |
+| `merge` | Add weights per vertex (up to `1.0`) and remove the old group. |
 
-Weight mesh configuration used to update the skinning of mesh objects:
+Example:
+
 ```json
 {
   "update_tasks": [
     {
-      "description": "Remove position bone weights.",
+      "description": "Remove position bone that should not be included in meshes weights",
       "remove_starting_operations": [
         {"starts_with": ["pos_", "Pos_"]}
       ]
     },
     {
-      "description": "Update hand weights.",
+      "description": "Update left-hand weights.",
       "replace_operations": [
         {"old": ["Hand_L"], "new": "hand_l", "conflit_resolution": "merge"},
         {"old": ["Index_00_L"], "new": "index_metacarpal_l", "conflit_resolution": "merge"},
@@ -182,42 +189,72 @@ Weight mesh configuration used to update the skinning of mesh objects:
         {"old": ["Index_04_L"], "new": "index_claw_l", "conflit_resolution": "merge"}
       ],
       "remove_operations": [
-        {"old": ["ObsoleteGroup"]}
+        {"old": ["old_bone"]}
       ]
     }
   ]
 }
-
 ```
 
-For skin weights, `conflit_resolution` controls what happens when the new
-vertex group already exists:
+If the destination group does not exist, it is created from the old group.
+Tasks run in order: replacements, exact removals, then prefix removals. Prefix
+matching is case-sensitive.
 
-- `keep_both`: leave both groups unchanged.
-- `remove_old`: remove the old group and keep the new group.
-- `remove_new`: remove the new group and replace it with the old group's weights.
-- `merge`: add both groups' weights per vertex, capped at 1.0,
-  and remove the old group.
+## Rig Controllers JSON
 
-If the new group does not exist, the old group is transferred to it. Multiple
-names in `old` are processed in order.
+The file requires an `update_tasks` array. Each task needs a `description` and
+an `action_search` value.
 
-`remove_starting_operations` removes vertex groups whose names start with any
-prefix in the non-empty `starts_with` list. Matching is case-sensitive. Tasks
-run in order; within each task, replacements run first, followed by exact
-removals and then prefix removals.
+| Parameter | Values | Description |
+|---|---|---|
+| `description` | String (required) | Short note for the task. |
+| `action_search` | `all_actions`, `used_actions`, `revelant_actions` (required) | Select actions to update or check. `all_action` is also accepted. |
+| `replace_channel_operations` | Array (optional) of `{old: [paths], new: path, conflit_resolution: value}` | Replace full animation data paths. |
+| `remove_channel_operations` | Array (optional) of `{old: [paths]}` | Remove full animation data paths. |
+| `replace_bone_operations` | Array (optional) of `{old: [names], new: name, conflit_resolution: value}` | Rename bones and their animation channels. |
+| `remove_bone_operations` | Array (optional) of `{old: [names]}` | Remove channels for named bones. |
+| `remove_starting_channel_operations` | Array (optional) of `{starts_with: [prefixes]}` | Remove channels by data-path prefix. |
+| `remove_deform_bones` | `true` / `false` (optional; default `false`) | Remove channels for deform bones on the target armature. |
 
-Rig controller configuration used to update the blender actions:
+`action_search` options:
+
+| Value | Description |
+|---|---|
+| `all_actions` | All local actions in the file. |
+| `used_actions` | The armature's active action and NLA actions. |
+| `revelant_actions` | Local actions with matching armature bones and slots. |
+
+Updates apply each task to its selected local actions; checks inspect their
+union.
+For action conflicts, `conflit_resolution` accepts:
+
+| Value | Description |
+|---|---|
+| `keep_both` | Keep both channels. |
+| `remove_old` | Keep the destination channel and remove the old one. |
+| `remove_new` | Replace the destination channel with the old channel's values. |
+
+Example:
 
 ```json
 {
   "update_tasks": [
     {
-      "description": "Update hand controllers.",
+      "description": "Remove animation channels for internal bones.",
       "action_search": "revelant_actions",
       "remove_starting_channel_operations": [
-        {"starts_with": ["pose.bones[\"rp_", "pose.bones[\"rlp_"]}
-      ],
+        {"starts_with": ["pose.bones[\"rp_"]},
+        {"starts_with": ["pose.bones[\"rlp_"]}
+      ]
+    },
+    {
+      "description": "Remove all deform bones that should not be animated. (Switch to true if your seperate deform bones from control bones)",
+      "action_search": "revelant_actions",
+      "remove_deform_bones": false
+    },
+    {
+      "description": "Update left-hand controllers.",
+      "action_search": "revelant_actions",
       "replace_channel_operations": [
         {"old": ["pose.bones[\"Ik_Hand_L\"][\"IkBlend\"]"], "new": "pose.bones[\"ik_hand_l\"][\"ik_blend\"]", "conflit_resolution": "remove_old"}
       ],
@@ -225,6 +262,7 @@ Rig controller configuration used to update the blender actions:
         {"old": ["pose.bones[\"Ik_Hand_L\"][\"old_property\"]"]}
       ],
       "replace_bone_operations": [
+        {"old": ["Ik_Hand_L"], "new": "ik_hand_l", "conflit_resolution": "remove_old"},
         {"old": ["c_Hand_L"], "new": "c_hand_l", "conflit_resolution": "remove_old"},
         {"old": ["c_Index_00_L"], "new": "c_index_metacarpal_l", "conflit_resolution": "remove_old"},
         {"old": ["c_Index_01_L"], "new": "c_index_01_l", "conflit_resolution": "remove_old"},
@@ -233,45 +271,16 @@ Rig controller configuration used to update the blender actions:
         {"old": ["c_Index_04_L"], "new": "c_index_claw_l", "conflit_resolution": "remove_old"}
       ],
       "remove_bone_operations": [
-        {"old": ["c_Layer_Body"]}
-      ],
-      "remove_deform_bones": true
+        {"old": ["c_old_bone"]}
+      ]
     }
   ]
 }
-
 ```
 
-Operations are applied in the order their sections appear in the JSON. It is
-recommended to place `replace_channel_operations` before `replace_bone_operations`
-so channel paths still match the old bone names. Channel operations match full
-data paths, while bone operations apply to all channels of the named bone.
-When a bone replacement is applied, channel groups named after the old bone are
-renamed to the new bone name as well.
-`remove_starting_channel_operations` removes channels whose full data path starts
-with any prefix in the non-empty `starts_with` list; the match is case-sensitive.
-`remove_deform_bones: true` removes action channels for every bone on the target
-armature whose `use_deform` property is enabled. It requires the target armature,
-just like action searches other than `all_actions`.
-
-Each rig update task must select its actions with `action_search`:
-
-- `all_actions`: all actions in the file (`all_action` is also accepted).
-- `used_actions`: the armature's active action and actions in its NLA strips.
-- `revelant_actions`: local actions with matching bones and action slots.
-
-Updates apply each task only to its selected local actions; checks inspect the
-union of selected local actions.
-
-Checks resolve channels against the target armature or its armature data without
-changing the actions. Slots targeting other data types are reported as skipped.
-
-For action updates, `conflit_resolution` controls what happens when the new
-channel already exists for the same array index and slot:
-
-- `keep_both`: leave both channels unchanged.
-- `remove_old`: remove the old channel and keep the new channel.
-- `remove_new`: remove the new channel and replace it with the old channel's values.
+Sections run in JSON order. Put channel replacements before bone replacements
+when paths use old bone names. Checks do not modify actions; slots for other
+data types are reported as skipped.
 
 
 ## Additional Notes
