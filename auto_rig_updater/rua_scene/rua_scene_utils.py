@@ -11,6 +11,7 @@ from .. import bbpl, rua_json_utils
 from . import rua_scene_props
 from . import rua_scene_type
 from .rua_scene_lib import rua_scene_lib_utils
+from .rua_scene_lib.methods import methods_utils
 
 
 def load_scene_rules_backward_compatibility(filepath: str) -> rua_scene_type.SceneRulesBackwardCompatibility:
@@ -100,7 +101,7 @@ def update_scene_scale(scene: bpy.types.Scene, configuration: rua_scene_type.Sce
                 for constraint in constraints:
                     if (
                         isinstance(constraint, bpy.types.ChildOfConstraint)
-                        and rua_scene_lib_utils.is_local_constraint(constraint)
+                        and methods_utils.is_local_constraint(constraint)
                     ):
                         matrix = constraint.inverse_matrix.copy()
                         matrix.translation *= scale_factor

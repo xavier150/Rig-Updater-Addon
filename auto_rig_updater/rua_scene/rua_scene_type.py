@@ -33,9 +33,15 @@ class CollectionRelinkTask(LibraryUpdateTask):
 
 
 @dataclasses.dataclass(frozen=True)
+class ProxyUpdateToCollectionTask(CollectionRelinkTask):
+    old_proxy: str = ""
+
+
+@dataclasses.dataclass(frozen=True)
 class LibrariesUpdateRules:
     reload_tasks: List[LibraryUpdateTask]
     collection_relink_tasks: List[CollectionRelinkTask]
+    proxy_update_to_collection_tasks: List[ProxyUpdateToCollectionTask] = dataclasses.field(default_factory=list)
 
 
 @dataclasses.dataclass(frozen=True)

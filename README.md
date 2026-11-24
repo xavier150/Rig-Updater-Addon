@@ -93,28 +93,27 @@ constraint scaling also skips inherited constraints.
 
 ### Library updates
 
-Include `reload_tasks`, `collection_relink_tasks`, or both in
-`libraries_update_rules`.
+Include one or more task arrays in `libraries_update_rules`.
 
 | Parameter | Values | Description |
 |---|---|---|
 | `reload_tasks` | Array of tasks (optional) | Reload libraries and refresh editable overrides. |
 | `collection_relink_tasks` | Array of tasks (optional) | Replace collection overrides with a new collection. |
+| `proxy_update_to_collection_tasks` | Array of tasks (optional) | Replace a legacy proxy and its collection with a new collection override. |
 | `description` | String (required) | Short note for the task. |
 | `old` | Array of `.blend` paths (required) | Source libraries to update. |
 | `new` | `.blend` path (required) | Destination library. |
-| `old_collection`, `new_collection` | Collection names (required for relink tasks) | Collections to replace and use. |
-| `path_type` | `as_before`, `relative`, `absolute` (relink only; default `as_before`) | How to store the destination path. |
-| `object_scale_multipliers` | Object name: positive finite number (relink only; optional) | Multiply local scale after relinking. |
-| `object_location_multipliers` | Object name: positive finite number (relink only; optional) | Multiply local location after relinking. |
+| `old_collection`, `new_collection` | Collection names (required for relink/proxy tasks) | Collections to replace and use. |
+| `old_proxy` | Object name (required for proxy tasks) | Local converted proxy to replace. The destination armature is detected automatically. |
+| `path_type` | `as_before`, `relative`, `absolute` (relink/proxy only; default `as_before`) | How to store the destination path. |
+| `object_scale_multipliers` | Object name: positive finite number (relink/proxy only; optional) | Multiply local scale after relinking. |
+| `object_location_multipliers` | Object name: positive finite number (relink/proxy only; optional) | Multiply local location after relinking. |
 
-Back up the `.blend` before relinking. Collection relinking requires Blender
-3.5+ and library overrides; convert collection instances first. It preserves
-root transforms, animation and local constraints, but does not transfer local
-drivers, non-action NLA strips or clips with modifiers. Update nested libraries
-in their parent file. Unused linked data from replaced libraries is removed;
-shared dependencies are kept. `path_type: "relative"` requires a saved file and
-a destination on the same drive.
+- Back up first. Relink/proxy tasks require Blender 3.5+; convert instances and legacy proxies to overrides first.
+- Relinks preserve animation, root transforms and local constraints, but not local drivers or complex NLA.
+- Proxy tasks require one destination armature and replace **all proxy drivers and bone constraints**.
+- Relative paths require a saved file and the same drive. Update nested libraries in their parent file.
+- Bone/channel renaming is separate. Do not target the same collection twice; all replacements are preflighted.
 
 Example:
 
@@ -129,17 +128,35 @@ Example:
     "scale_constraints": true
   },
   "libraries_update_rules": {
+    "reload_tasks": [
+      {
+        "description": "Reload a library",
+        "old": ["OldLib.blend"],
+        "new": "NewLib.blend"
+      }
+    ],
     "collection_relink_tasks": [
       {
-        "description": "Update old rig to new rig",
-        "old": ["Path\\To\\My\\OldRig\\OldRig.blend"],
-        "new": "Path\\To\\My\\NewRig\\NewRig.blend",
+        "description": "Relink a collection",
+        "old": ["OldRigCollection.blend"],
+        "new": "NewRigCollection.blend",
         "path_type": "as_before",
-        "old_collection": "MyRig_Collection",
-        "new_collection": "MyRig_Collection",
+        "old_collection": "OldRigCollection",
+        "new_collection": "NewRigCollection",
         "object_scale_multipliers": {
-          "Cobble_Character": 100.0
+          "NewRig": 100.0
         }
+      }
+    ],
+    "proxy_update_to_collection_tasks": [
+      {
+        "description": "Replace a legacy proxy",
+        "old": ["OldRigProxy.blend"],
+        "new": "NewRigCollection.blend",
+        "path_type": "as_before",
+        "old_collection": "OldRigProxyCollection",
+        "new_collection": "NewRigCollection",
+        "old_proxy": "OldRig_proxy"
       }
     ]
   }

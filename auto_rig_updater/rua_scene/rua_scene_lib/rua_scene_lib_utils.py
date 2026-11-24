@@ -4,31 +4,10 @@
 
 import os
 import math
-from typing import Callable, Dict, List, Optional, Set, cast
-
-import bpy
+from typing import Callable, Dict, List, Optional, cast
 
 from ... import rua_json_utils
 from .. import rua_scene_type
-
-
-def is_local_constraint(constraint: bpy.types.Constraint) -> bool:
-    owner = cast(bpy.types.Object, constraint.id_data)
-    if cast(Optional[bpy.types.Library], owner.library) is not None or constraint.is_override_data:
-        return False
-    # Newly created overrides in Blender 3.6 can lack inherited constraint flags.
-    if owner.override_library is not None:
-        reference = owner.override_library.reference
-        if isinstance(reference, bpy.types.Object):
-            reference_constraints: List[bpy.types.Constraint] = list(reference.constraints)
-            if reference.pose is not None:
-                reference_constraints.extend(
-                    item for bone in reference.pose.bones for item in bone.constraints
-                )
-            path = constraint.path_from_id()
-            if any(item.path_from_id() == path for item in reference_constraints):
-                return False
-    return True
 
 
 def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdateRules:
@@ -36,14 +15,23 @@ def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdat
         raise ValueError("libraries_update_rules: expected an object.")
     mapping = cast(Dict[str, object], value)
     keys = set(mapping)
-    if not keys or not keys <= {"reload_tasks", "collection_relink_tasks"}:
-        raise ValueError("libraries_update_rules: expected reload_tasks and/or collection_relink_tasks.")
+    if not keys or not keys <= {
+        "reload_tasks", "collection_relink_tasks", "proxy_update_to_collection_tasks",
+    }:
+        raise ValueError(
+            "libraries_update_rules: expected reload_tasks, collection_relink_tasks "
+            "and/or proxy_update_to_collection_tasks."
+        )
     libraries = rua_json_utils.require_dict(mapping, "libraries_update_rules", keys)
 
-    def parse_task(value: object, location: str, collection: bool) -> rua_scene_type.LibraryUpdateTask:
+    def parse_task(
+        value: object, location: str, collection: bool, proxy: bool = False,
+    ) -> rua_scene_type.LibraryUpdateTask:
         task_keys = {"description", "old", "new"}
         if collection:
             task_keys.update({"old_collection", "new_collection"})
+            if proxy:
+                task_keys.add("old_proxy")
             if isinstance(value, dict):
                 task_keys.update(
                     key for key in ("object_scale_multipliers", "object_location_multipliers", "path_type")
@@ -61,7 +49,7 @@ def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdat
             path_type = task.get("path_type", "as_before")
             if not isinstance(path_type, str) or path_type not in {"as_before", "relative", "absolute"}:
                 raise ValueError(f"{location}.path_type: expected 'as_before', 'relative' or 'absolute'.")
-            return rua_scene_type.CollectionRelinkTask(
+            arguments = (
                 description, old_paths, new_path,
                 rua_json_utils.parse_new_name(task["old_collection"], f"{location}.old_collection"),
                 rua_json_utils.parse_new_name(task["new_collection"], f"{location}.new_collection"),
@@ -73,6 +61,12 @@ def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdat
                 ),
                 path_type,
             )
+            if proxy:
+                return rua_scene_type.ProxyUpdateToCollectionTask(
+                    *arguments,
+                    old_proxy=rua_json_utils.parse_new_name(task["old_proxy"], f"{location}.old_proxy"),
+                )
+            return rua_scene_type.CollectionRelinkTask(*arguments)
         return rua_scene_type.LibraryUpdateTask(description, old_paths, new_path)
 
     reload_tasks = [
@@ -89,7 +83,18 @@ def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdat
         if not isinstance(task, rua_scene_type.CollectionRelinkTask):
             raise RuntimeError("Collection relink task parsing returned an invalid task.")
         collection_tasks.append(task)
-    return rua_scene_type.LibrariesUpdateRules(reload_tasks, collection_tasks)
+    proxy_tasks: List[rua_scene_type.ProxyUpdateToCollectionTask] = []
+    for index, item in enumerate(rua_json_utils.require_list(
+        libraries.get("proxy_update_to_collection_tasks", []),
+        "libraries_update_rules.proxy_update_to_collection_tasks",
+    )):
+        task = parse_task(
+            item, f"libraries_update_rules.proxy_update_to_collection_tasks[{index}]", True, proxy=True,
+        )
+        if not isinstance(task, rua_scene_type.ProxyUpdateToCollectionTask):
+            raise RuntimeError("Proxy migration task parsing returned an invalid task.")
+        proxy_tasks.append(task)
+    return rua_scene_type.LibrariesUpdateRules(reload_tasks, collection_tasks, proxy_tasks)
 
 
 def _parse_object_multipliers(value: object, location: str) -> Dict[str, float]:
@@ -109,36 +114,17 @@ def _parse_object_multipliers(value: object, location: str) -> Dict[str, float]:
     return multipliers
 
 
-def absolute_path(path: str, library: Optional[bpy.types.Library] = None) -> str:
-    return os.path.normpath(bpy.path.abspath(path, library=library))
-
-
-def path_key(path: str, library: Optional[bpy.types.Library] = None) -> str:
-    return os.path.normcase(absolute_path(path, library))
-
-
-def restore_selection(
-    view_layer: bpy.types.ViewLayer, selected_names: Set[str], active_name: Optional[str],
-) -> None:
-    view_layer.update()
-    active = None
-    for obj in view_layer.objects:
-        if obj is None:
-            print("[Rig Updater] Warning: a view-layer object is unavailable while restoring selection.")
-            continue
-        obj.select_set(obj.name_full in selected_names, view_layer=view_layer)
-        if obj.name_full == active_name:
-            active = obj
-    view_layer.objects.active = active
-
-
 def update_scene_libraries(
     configuration: rua_scene_type.SceneRulesBackwardCompatibility,
     warning_callback: Optional[Callable[[str], None]] = None,
 ) -> int:
-    from .methods import reload_tasks_utils, relink_tasks_utils
+    from .methods import methods_utils, proxy_tasks_utils, reload_tasks_utils, relink_tasks_utils
 
     tasks = configuration.libraries_update_rules
     reload_tasks_utils.preflight_reload_tasks(tasks.reload_tasks, warning_callback)
-    updated = relink_tasks_utils.relink_scene_collections(tasks.collection_relink_tasks)
+    plans = [
+        *relink_tasks_utils.plan_collection_relinks(tasks.collection_relink_tasks),
+        *proxy_tasks_utils.plan_proxy_updates(tasks.proxy_update_to_collection_tasks),
+    ]
+    updated = methods_utils.apply_collection_relink_plans(plans)
     return updated + reload_tasks_utils.reload_scene_libraries(tasks.reload_tasks, warning_callback)

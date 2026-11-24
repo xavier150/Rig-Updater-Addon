@@ -6,13 +6,13 @@ import importlib
 
 import bpy
 
-from . import rua_scene_lib_utils
 from . import methods
+from . import rua_scene_lib_utils
 
-if "rua_scene_lib_utils" in locals():
-    importlib.reload(rua_scene_lib_utils)
 if "methods" in locals():
     importlib.reload(methods)
+if "rua_scene_lib_utils" in locals():
+    importlib.reload(rua_scene_lib_utils)
 
 
 # -------------------------------------------------------------------
