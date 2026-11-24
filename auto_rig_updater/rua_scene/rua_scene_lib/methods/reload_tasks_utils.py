@@ -9,7 +9,8 @@ from typing import Callable, List, Optional, Set, Tuple, cast
 import bpy
 
 from ... import rua_scene_type
-from .methods_utils import absolute_path, path_key, restore_selection
+from ..object_state.object_state_utils import restore_selection
+from .methods_utils import absolute_path, path_key
 
 
 def _check_destination_library(

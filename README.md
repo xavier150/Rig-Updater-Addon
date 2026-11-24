@@ -113,7 +113,7 @@ Include one or more task arrays in `libraries_update_rules`.
 - Relinks preserve animation, root transforms and local constraints, but not local drivers or complex NLA.
 - Proxy tasks require one destination armature and replace **all proxy drivers and bone constraints**.
 - Relative paths require a saved file and the same drive. Update nested libraries in their parent file.
-- Bone/channel renaming is separate. Do not target the same collection twice; all replacements are preflighted.
+- `Update Actions` migrates bone/channel names; relinks only restore action/NLA assignments. Do not target the same collection twice; all replacements are preflighted.
 
 Example:
 

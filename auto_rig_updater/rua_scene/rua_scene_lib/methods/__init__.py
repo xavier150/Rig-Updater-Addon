@@ -7,12 +7,15 @@ import importlib
 import bpy
 
 from . import methods_utils
+from . import collection_relink_utils
 from . import reload_tasks_utils
 from . import relink_tasks_utils
 from . import proxy_tasks_utils
 
 if "methods_utils" in locals():
     importlib.reload(methods_utils)
+if "collection_relink_utils" in locals():
+    importlib.reload(collection_relink_utils)
 if "reload_tasks_utils" in locals():
     importlib.reload(reload_tasks_utils)
 if "relink_tasks_utils" in locals():

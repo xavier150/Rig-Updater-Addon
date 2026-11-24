@@ -118,7 +118,7 @@ def update_scene_libraries(
     configuration: rua_scene_type.SceneRulesBackwardCompatibility,
     warning_callback: Optional[Callable[[str], None]] = None,
 ) -> int:
-    from .methods import methods_utils, proxy_tasks_utils, reload_tasks_utils, relink_tasks_utils
+    from .methods import collection_relink_utils, proxy_tasks_utils, reload_tasks_utils, relink_tasks_utils
 
     tasks = configuration.libraries_update_rules
     reload_tasks_utils.preflight_reload_tasks(tasks.reload_tasks, warning_callback)
@@ -126,5 +126,5 @@ def update_scene_libraries(
         *relink_tasks_utils.plan_collection_relinks(tasks.collection_relink_tasks),
         *proxy_tasks_utils.plan_proxy_updates(tasks.proxy_update_to_collection_tasks),
     ]
-    updated = methods_utils.apply_collection_relink_plans(plans)
+    updated = collection_relink_utils.apply_collection_relink_plans(plans)
     return updated + reload_tasks_utils.reload_scene_libraries(tasks.reload_tasks, warning_callback)

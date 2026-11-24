@@ -7,7 +7,7 @@ from typing import List, Optional, cast
 import bpy
 
 from ... import rua_scene_type
-from . import methods_utils
+from . import collection_relink_utils, methods_utils
 
 
 def _proxy_object(
@@ -31,12 +31,12 @@ def _proxy_object(
 
 def plan_proxy_updates(
     tasks: List[rua_scene_type.ProxyUpdateToCollectionTask],
-) -> List[methods_utils.CollectionRelinkPlan]:
-    plans: List[methods_utils.CollectionRelinkPlan] = []
+) -> List[collection_relink_utils.CollectionRelinkPlan]:
+    plans: List[collection_relink_utils.CollectionRelinkPlan] = []
     for task in tasks:
         matches = methods_utils.find_relink_collections(task)
         if not matches:
-            plans.append(methods_utils.CollectionRelinkPlan(task, matches))
+            plans.append(collection_relink_utils.CollectionRelinkPlan(task, matches))
             continue
         if len(matches) != 1:
             raise ValueError(f"Proxy migration requires one matching collection, found {len(matches)}.")
@@ -54,11 +54,11 @@ def plan_proxy_updates(
                 f"Proxy migration requires exactly one destination armature "
                 f"in collection '{task.new_collection}', found {len(armatures)}."
             )
-        plans.append(methods_utils.CollectionRelinkPlan(
+        plans.append(collection_relink_utils.CollectionRelinkPlan(
             task, matches, _proxy_object(matches[0], task), armatures[0].name,
         ))
     return plans
 
 
 def update_proxies_to_collections(tasks: List[rua_scene_type.ProxyUpdateToCollectionTask]) -> int:
-    return methods_utils.apply_collection_relink_plans(plan_proxy_updates(tasks))
+    return collection_relink_utils.apply_collection_relink_plans(plan_proxy_updates(tasks))
