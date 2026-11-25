@@ -34,21 +34,10 @@ def capture_object_state(
     )
 
 
-def validate_object_animation(source: bpy.types.Object, replace_drivers: bool = False) -> None:
-    """Reject unsupported NLA and local drivers unless explicitly rebuilding a proxy rig."""
+def validate_object_animation(source: bpy.types.Object) -> None:
+    """Reject NLA strips that cannot be preserved during collection relinking."""
     if source.animation_data is None:
         return
-    reference = source.override_library.reference if source.override_library else None
-    reference_animation = reference.animation_data if isinstance(reference, bpy.types.Object) else None
-    reference_drivers: Set[Tuple[str, int]] = {
-        (driver.data_path, driver.array_index)
-        for driver in reference_animation.drivers
-    } if reference_animation is not None else set()
-    if not replace_drivers and any((driver.data_path, driver.array_index) not in reference_drivers
-                                   for driver in source.animation_data.drivers):
-        raise ValueError(
-            f"Cannot persist local drivers on override object '{source.name}' during collection relinking."
-        )
     for track in source.animation_data.nla_tracks:
         for strip in track.strips:
             if strip.type != 'CLIP' or strip.action is None or len(strip.modifiers):

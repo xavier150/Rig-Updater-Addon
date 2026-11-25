@@ -110,7 +110,7 @@ Include one or more task arrays in `libraries_update_rules`.
 | `object_location_multipliers` | Object name: positive finite number (relink/proxy only; optional) | Multiply local location after relinking. |
 
 - Back up first. Relink/proxy tasks require Blender 3.5+; convert instances and legacy proxies to overrides first.
-- Relinks preserve animation, root transforms and local constraints, but not local drivers or complex NLA.
+- Relinks preserve animation, root transforms and local constraints. Old local drivers are discarded; unsupported complex NLA still blocks the relink.
 - Proxy tasks require one destination armature and replace **all proxy drivers and bone constraints**.
 - Relative paths require a saved file and the same drive. Update nested libraries in their parent file.
 - `Update Actions` migrates bone/channel names; relinks only restore action/NLA assignments. Do not target the same collection twice; all replacements are preflighted.

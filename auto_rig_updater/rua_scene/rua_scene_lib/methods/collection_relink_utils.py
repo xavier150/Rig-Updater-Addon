@@ -85,7 +85,7 @@ def _relink_collection(
     if len(set(old_names.values())) != len(old_names):
         raise ValueError(f"Collection '{root_name}' contains multiple objects with the same reference name.")
     for obj in local_objects:
-        object_state_utils.validate_object_animation(obj, replace_drivers=obj == proxy)
+        object_state_utils.validate_object_animation(obj)
     snapshots: List[object_state_utils.ObjectSnapshot] = []
     removed = [False]
     completed = [False]
@@ -223,7 +223,7 @@ def apply_collection_relink_plans(plans: List[CollectionRelinkPlan]) -> int:
             seen_local_ids.update(local_ids)
             for obj in objects:
                 if cast(Optional[bpy.types.Library], obj.library) is None:
-                    object_state_utils.validate_object_animation(obj, replace_drivers=obj == proxy)
+                    object_state_utils.validate_object_animation(obj)
         seen.update(matches)
     if bpy.app.version < (3, 5, 0) and any(plan.collections for plan in plans):
         raise ValueError("Collection relinking requires Blender 3.5 or newer.")
