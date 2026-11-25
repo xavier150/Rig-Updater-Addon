@@ -184,7 +184,10 @@ def _relink_collection(
         for snapshot in snapshots:
             bpy.data.objects.remove(snapshot.backup, do_unlink=True)
         snapshots.clear()
-        new_root.name = task.new_collection if proxy_name is not None else root_name
+        if proxy_name is not None or task.old_collection != task.new_collection:
+            new_root.name = task.new_collection
+        else:
+            new_root.name = root_name
         for snapshot, obj in pairs:
             if obj is not None and snapshot.name != proxy_name:
                 obj.name = snapshot.name
@@ -207,6 +210,13 @@ def apply_collection_relink_plans(plans: List[CollectionRelinkPlan]) -> int:
             raise ValueError(f"Collection '{task.old_collection}' is matched by multiple relink tasks.")
         for root in matches:
             objects = methods_utils.relink_objects(root, proxy)
+            if proxy is not None or task.old_collection != task.new_collection:
+                existing_collection = bpy.data.collections.get(task.new_collection)
+                if (
+                    existing_collection is not None and existing_collection.library is None
+                    and existing_collection != root
+                ):
+                    raise ValueError(f"Destination collection name '{task.new_collection}' is already used.")
             if proxy is not None:
                 existing = bpy.data.objects.get(new_armature)
                 if (

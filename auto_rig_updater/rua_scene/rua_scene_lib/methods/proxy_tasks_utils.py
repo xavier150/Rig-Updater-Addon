@@ -13,14 +13,32 @@ from . import collection_relink_utils, methods_utils
 def _proxy_object(
     root: bpy.types.Collection, task: rua_scene_type.ProxyUpdateToCollectionTask,
 ) -> bpy.types.Object:
+    collection = root.override_library.reference if root.override_library is not None else root
+    if not isinstance(collection, bpy.types.Collection):
+        raise ValueError(f"Collection '{task.old_collection}' has no library override reference.")
+    if not task.old_proxy:
+        candidates = [
+            obj for obj in bpy.data.objects
+            if obj.type == 'ARMATURE'
+            and cast(Optional[bpy.types.Library], obj.library) is None
+            and obj.override_library is not None
+            and isinstance(obj.override_library.reference, bpy.types.Object)
+            and obj.override_library.reference in collection.all_objects[:]
+        ]
+        if len(candidates) != 1:
+            names = ", ".join(sorted(obj.name for obj in candidates))
+            raise ValueError(
+                f"Expected exactly one local proxy armature for collection '{task.old_collection}', "
+                f"found {len(candidates)}{': ' + names if names else ''}. "
+                "Set old_proxy to select the correct override."
+            )
+        return candidates[0]
     proxy = bpy.data.objects.get(task.old_proxy)
     if proxy is None or proxy.type != 'ARMATURE' or cast(Optional[bpy.types.Library], proxy.library) is not None:
         raise ValueError(f"Local proxy armature '{task.old_proxy}' was not found.")
     reference = proxy.override_library.reference if proxy.override_library is not None else None
-    collection = root.override_library.reference if root.override_library is not None else root
     if (
-        not isinstance(reference, bpy.types.Object) or not isinstance(collection, bpy.types.Collection)
-        or reference not in collection.all_objects[:]
+        not isinstance(reference, bpy.types.Object) or reference not in collection.all_objects[:]
     ):
         raise ValueError(
             f"Proxy '{task.old_proxy}' is not an override of an object in '{task.old_collection}'. "

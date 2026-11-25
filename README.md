@@ -98,20 +98,19 @@ Include one or more task arrays in `libraries_update_rules`.
 | Parameter | Values | Description |
 |---|---|---|
 | `reload_tasks` | Array of tasks (optional) | Reload libraries and refresh editable overrides. |
-| `collection_relink_tasks` | Array of tasks (optional) | Replace collection overrides with a new collection. |
-| `proxy_update_to_collection_tasks` | Array of tasks (optional) | Replace a legacy proxy and its collection with a new collection override. |
+| `collection_relink_tasks` | Array of tasks (optional) | Replace collections and automatically migrate renamed armatures. |
+| `proxy_update_to_collection_tasks` | Array of tasks (optional; legacy) | Backward-compatible proxy tasks; prefer `collection_relink_tasks`. |
 | `description` | String (required) | Short note for the task. |
 | `old` | Array of `.blend` paths (required) | Source libraries to update. |
 | `new` | `.blend` path (required) | Destination library. |
 | `old_collection`, `new_collection` | Collection names (required for relink/proxy tasks) | Collections to replace and use. |
-| `old_proxy` | Object name (required for proxy tasks) | Local converted proxy to replace. The destination armature is detected automatically. |
 | `path_type` | `as_before`, `relative`, `absolute` (relink/proxy only; default `as_before`) | How to store the destination path. |
 | `object_scale_multipliers` | Object name: positive finite number (relink/proxy only; optional) | Multiply local scale after relinking. |
 | `object_location_multipliers` | Object name: positive finite number (relink/proxy only; optional) | Multiply local location after relinking. |
 
 - Back up first. Relink/proxy tasks require Blender 3.5+; convert instances and legacy proxies to overrides first.
 - Relinks preserve animation, root transforms and local constraints. Old local drivers are discarded; unsupported complex NLA still blocks the relink.
-- Proxy tasks require one destination armature and replace **all proxy drivers and bone constraints**.
+- When a local armature's linked name is absent from the destination, the updater maps it to the single unmatched destination armature. Ambiguous mappings stop the update. The replacement uses the destination rig's drivers and bone constraints.
 - Relative paths require a saved file and the same drive. Update nested libraries in their parent file.
 - `Update Actions` migrates bone/channel names; relinks only restore action/NLA assignments. Do not target the same collection twice; all replacements are preflighted.
 
@@ -146,17 +145,14 @@ Example:
         "object_scale_multipliers": {
           "NewRig": 100.0
         }
-      }
-    ],
-    "proxy_update_to_collection_tasks": [
+      },
       {
         "description": "Replace a legacy proxy",
         "old": ["OldRigProxy.blend"],
         "new": "NewRigCollection.blend",
         "path_type": "as_before",
         "old_collection": "OldRigProxyCollection",
-        "new_collection": "NewRigCollection",
-        "old_proxy": "OldRig_proxy"
+        "new_collection": "NewRigCollection"
       }
     ]
   }

@@ -30,13 +30,15 @@ def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdat
         task_keys = {"description", "old", "new"}
         if collection:
             task_keys.update({"old_collection", "new_collection"})
-            if proxy:
-                task_keys.add("old_proxy")
             if isinstance(value, dict):
                 task_keys.update(
-                    key for key in ("object_scale_multipliers", "object_location_multipliers", "path_type")
+                    key for key in (
+                        "object_scale_multipliers", "object_location_multipliers", "path_type", "old_proxy",
+                    )
                     if key in value
                 )
+                if not proxy and "mode" in value:
+                    task_keys.add("mode")
         task = rua_json_utils.require_dict(value, location, task_keys)
         description = task["description"]
         if not isinstance(description, str):
@@ -46,6 +48,11 @@ def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdat
         if any(os.path.splitext(path)[1].lower() != ".blend" for path in old_paths + [new_path]):
             raise ValueError(f"{location}: library paths must point to .blend files.")
         if collection:
+            mode = task.get("mode", "proxy" if proxy else "collection")
+            if not isinstance(mode, str) or mode not in {"collection", "proxy"}:
+                raise ValueError(f"{location}.mode: expected 'collection' or 'proxy'.")
+            if mode != "proxy" and "old_proxy" in task:
+                raise ValueError(f"{location}.old_proxy: only allowed in proxy mode.")
             path_type = task.get("path_type", "as_before")
             if not isinstance(path_type, str) or path_type not in {"as_before", "relative", "absolute"}:
                 raise ValueError(f"{location}.path_type: expected 'as_before', 'relative' or 'absolute'.")
@@ -61,10 +68,13 @@ def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdat
                 ),
                 path_type,
             )
-            if proxy:
+            if mode == "proxy":
                 return rua_scene_type.ProxyUpdateToCollectionTask(
                     *arguments,
-                    old_proxy=rua_json_utils.parse_new_name(task["old_proxy"], f"{location}.old_proxy"),
+                    old_proxy=(
+                        rua_json_utils.parse_new_name(task["old_proxy"], f"{location}.old_proxy")
+                        if "old_proxy" in task else ""
+                    ),
                 )
             return rua_scene_type.CollectionRelinkTask(*arguments)
         return rua_scene_type.LibraryUpdateTask(description, old_paths, new_path)
