@@ -47,6 +47,11 @@ def get_actions_for_search(armature: Optional[bpy.types.Object], action_search: 
             actions = bbpl.action.action_utils.get_used_actions(armature)
         elif action_search == "revelant_actions":
             actions = bbpl.action.action_utils.get_relevant_actions([armature])
+        elif action_search == "revelant_and_used_actions":
+            actions = bbpl.action.action_utils.get_relevant_actions([armature])
+            for action in bbpl.action.action_utils.get_used_actions(armature):
+                if action not in actions:
+                    actions.append(action)
         else:
             raise ValueError(f"Unknown action search: {action_search!r}.")
     return [action for action in actions if action.library is None]

@@ -33,7 +33,10 @@ def load_rig_controllers_backward_compatibility(filepath: str) -> rua_rig_type.R
         keys = {"description", "action_search"}
         if isinstance(item, dict):
             if "action_search" not in item:
-                raise ValueError(f"{location}.action_search: required; expected all_actions, used_actions, or revelant_actions.")
+                raise ValueError(
+                    f"{location}.action_search: required; expected all_actions, used_actions, "
+                    "revelant_actions, or revelant_and_used_actions."
+                )
             keys.update(key for key in optional_keys if key in item)
         task = rua_json_utils.require_dict(cast(object, item), location, keys)
         description = task["description"]
@@ -41,9 +44,12 @@ def load_rig_controllers_backward_compatibility(filepath: str) -> rua_rig_type.R
             raise ValueError(f"{location}.description: expected a string.")
         search = task["action_search"]
         if not isinstance(search, str) or search not in (
-            "all_actions", "all_action", "used_actions", "revelant_actions",
+            "all_actions", "all_action", "used_actions", "revelant_actions", "revelant_and_used_actions",
         ):
-            raise ValueError(f"{location}.action_search: expected all_actions, used_actions, or revelant_actions.")
+            raise ValueError(
+                f"{location}.action_search: expected all_actions, used_actions, "
+                "revelant_actions, or revelant_and_used_actions."
+            )
         if search == "all_action":
             search = "all_actions"
         sections: List[Union[

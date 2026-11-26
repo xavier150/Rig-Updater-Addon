@@ -229,7 +229,7 @@ an `action_search` value.
 | Parameter | Values | Description |
 |---|---|---|
 | `description` | String (required) | Short note for the task. |
-| `action_search` | `all_actions`, `used_actions`, `revelant_actions` (required) | Select actions to update or check. `all_action` is also accepted. |
+| `action_search` | `all_actions`, `used_actions`, `revelant_actions`, `revelant_and_used_actions` (required) | Select actions to update or check. `all_action` is also accepted. |
 | `replace_channel_operations` | Array (optional) of `{old: [paths], new: path, conflit_resolution: value}` | Replace full animation data paths. |
 | `remove_channel_operations` | Array (optional) of `{old: [paths]}` | Remove full animation data paths. |
 | `replace_bone_operations` | Array (optional) of `{old: [names], new: name, conflit_resolution: value}` | Rename bones and their animation channels. |
@@ -244,6 +244,7 @@ an `action_search` value.
 | `all_actions` | All local actions in the file. |
 | `used_actions` | The armature's active action and NLA actions. |
 | `revelant_actions` | Local actions with matching armature bones and slots. |
+| `revelant_and_used_actions` | Union of relevant and used local actions, without duplicates. |
 
 Updates apply each task to its selected local actions; checks inspect their
 union.

@@ -21,7 +21,7 @@ from ... import rua_armature
 
 def _print_action_search(armature: bpy.types.Object) -> None:
     print(f'[Rig Updater] Action search preview for armature "{armature.name}":')
-    for search in ("all_actions", "used_actions", "revelant_actions"):
+    for search in ("all_actions", "used_actions", "revelant_actions", "revelant_and_used_actions"):
         print(f"{search}:")
         for action in rua_action.rua_action_utils.get_actions_for_search(armature, search):
             print(f"- {action.name}")
