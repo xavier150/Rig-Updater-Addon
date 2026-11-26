@@ -15,6 +15,7 @@ from .. import rua_action
 from .. import rua_armature
 from .. import rua_check
 from .. import rua_json_file_selector
+from .. import rua_tools
 from . import rua_ui_utils
 
 if "rua_ui_utils" in locals():
@@ -36,6 +37,19 @@ class RUA_PT_MainPanel(bpy.types.Panel):
             rua_check.rua_check_ui.rua_check_ui_utils.draw(layout, context)
 
 
+class RUA_PT_ToolsPanel(bpy.types.Panel):
+    bl_idname = "RUA_PT_tools_panel"
+    bl_label = "Tools"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = 'Rig Updater'
+
+    def draw(self, context: bpy.types.Context) -> None:
+        layout = self.layout
+        if layout is not None:
+            rua_tools.rua_tools_ui.rua_tools_ui_utils.draw(layout, context)
+
+
 # -------------------------------------------------------------------
 #   Register & Unregister
 # -------------------------------------------------------------------
@@ -43,6 +57,7 @@ class RUA_PT_MainPanel(bpy.types.Panel):
 
 classes = (
     RUA_PT_MainPanel,
+    RUA_PT_ToolsPanel,
 )
 
 

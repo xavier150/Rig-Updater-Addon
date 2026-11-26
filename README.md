@@ -66,6 +66,14 @@ Check meshes weights related to an armature and display the results in the syste
 - `Check Meshes Weights (Active)` checks mesh weights for the active armature.
 - `Check Meshes Weights (All)` checks mesh weights for every armature in the scene.
 
+## Tools
+
+In **3D View > Sidebar > Rig Updater > Tools > Preview**, use
+`Action Search (Active)` for the active armature or `Action Search (All)` for
+every armature in the scene. The buttons print the local actions selected by each
+`action_search` mode to Blender's system console. They do not change actions and
+do not require a JSON configuration.
+
 # Configuration JSON
 
 For linked armatures and inherited overrides, relative paths (`//...`) resolve

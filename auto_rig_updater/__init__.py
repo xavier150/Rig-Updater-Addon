@@ -22,6 +22,7 @@ try:
     from . import rua_skin
     from . import rua_action
     from . import rua_check
+    from . import rua_tools
     from . import rua_ui
 
     if "bpl" in locals():
@@ -46,6 +47,8 @@ try:
         importlib.reload(rua_action)
     if "rua_check" in locals():
         importlib.reload(rua_check)
+    if "rua_tools" in locals():
+        importlib.reload(rua_tools)
     if "rua_ui" in locals():
         importlib.reload(rua_ui)
 
@@ -73,6 +76,7 @@ try:
             rua_skin.register()
             rua_action.register()
             rua_check.register()
+            rua_tools.register()
             rua_ui.register()
 
         except Exception as _:
@@ -86,6 +90,7 @@ try:
     def unregister() -> None:
         try:
             rua_ui.unregister()
+            rua_tools.unregister()
             rua_check.unregister()
             rua_action.unregister()
             rua_skin.unregister()
