@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: MIT
 
+import runpy
 from contextlib import ExitStack
 from typing import Dict, List, NamedTuple, Optional, Set, cast
 
@@ -17,6 +18,23 @@ class CollectionRelinkPlan(NamedTuple):
     collections: List[bpy.types.Collection]
     proxy: Optional[bpy.types.Object] = None
     new_armature: str = ""
+
+
+def _run_update_scripts(task: rua_scene_type.CollectionRelinkTask, armatures: List[bpy.types.Object]) -> None:
+    if not task.scripts_to_run_on_update:
+        return
+    if not armatures:
+        raise ValueError(
+            f"Task '{task.description}' has scripts_to_run_on_update but the updated collection has no armature."
+        )
+    for script_path in task.scripts_to_run_on_update:
+        namespace = runpy.run_path(script_path)
+        run_script = namespace.get("run")
+        if not callable(run_script):
+            raise TypeError(f"Update script '{script_path}' must define a callable run(armature).")
+        for armature in armatures:
+            run_script(armature)
+        print(f"[Rig Updater] Ran update script '{script_path}'.")
 
 
 def _relink_collection(
@@ -198,6 +216,13 @@ def _relink_collection(
             if active_name == proxy_name:
                 active_name = new_armature
         completed[0] = True
+        _run_update_scripts(
+            task,
+            [
+                obj for obj in new_objects.values()
+                if obj.type == 'ARMATURE' and cast(Optional[bpy.types.Library], obj.library) is None
+            ],
+        )
     return scene
 
 

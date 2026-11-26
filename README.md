@@ -115,8 +115,10 @@ Include one or more task arrays in `libraries_update_rules`.
 | `path_type` | `as_before`, `relative`, `absolute` (relink/proxy only; default `as_before`) | How to store the destination path. |
 | `object_scale_multipliers` | Object name: positive finite number (relink/proxy only; optional) | Multiply local scale after relinking. |
 | `object_location_multipliers` | Object name: positive finite number (relink/proxy only; optional) | Multiply local location after relinking. |
+| `scripts_to_run_on_update` | Array of `.py` paths (relink/proxy only; optional) | Run trusted Python scripts on each updated local armature after relinking. Paths are relative to the Scene Rules JSON file or absolute. Each script must define `run(armature)`. |
 
 - Back up first. Relink/proxy tasks require Blender 3.5+; convert instances and legacy proxies to overrides first.
+- Update scripts execute Python code in Blender. Only reference scripts you trust; a missing script or a script without `run(armature)` stops the update.
 - Relinks preserve animation, root transforms and local constraints. Old local drivers are discarded; unsupported complex NLA still blocks the relink.
 - When a local armature's linked name is absent from the destination, the updater maps it to the single unmatched destination armature. Ambiguous mappings stop the update. The replacement uses the destination rig's drivers and bone constraints.
 - Relative paths require a saved file and the same drive. Update nested libraries in their parent file.

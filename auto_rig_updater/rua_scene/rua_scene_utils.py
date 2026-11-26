@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 import math
+import os
 from typing import Dict, Optional, Tuple
 
 import bpy
@@ -45,7 +46,9 @@ def load_scene_rules_backward_compatibility(filepath: str) -> rua_scene_type.Sce
         if not isinstance(value, bool):
             raise ValueError(f"scene_rescale_rules.{name}: expected a boolean.")
         scale_options[name] = value
-    tasks = rua_scene_lib_utils.parse_libraries_update_rules(document["libraries_update_rules"])
+    tasks = rua_scene_lib_utils.parse_libraries_update_rules(
+        document["libraries_update_rules"], base_directory=os.path.dirname(os.path.abspath(filepath)),
+    )
     return rua_scene_type.SceneRulesBackwardCompatibility(
         rua_scene_type.SceneRescaleRules(
             float(scale), scale_options["scale_object_position"],

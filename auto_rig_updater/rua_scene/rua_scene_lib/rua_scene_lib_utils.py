@@ -10,7 +10,9 @@ from ... import rua_json_utils
 from .. import rua_scene_type
 
 
-def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdateRules:
+def parse_libraries_update_rules(
+    value: object, *, base_directory: Optional[str] = None,
+) -> rua_scene_type.LibrariesUpdateRules:
     if not isinstance(value, dict):
         raise ValueError("libraries_update_rules: expected an object.")
     mapping = cast(Dict[str, object], value)
@@ -34,6 +36,7 @@ def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdat
                 task_keys.update(
                     key for key in (
                         "object_scale_multipliers", "object_location_multipliers", "path_type", "old_proxy",
+                        "scripts_to_run_on_update",
                     )
                     if key in value
                 )
@@ -56,6 +59,11 @@ def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdat
             path_type = task.get("path_type", "as_before")
             if not isinstance(path_type, str) or path_type not in {"as_before", "relative", "absolute"}:
                 raise ValueError(f"{location}.path_type: expected 'as_before', 'relative' or 'absolute'.")
+            scripts = _parse_update_scripts(
+                task.get("scripts_to_run_on_update", []),
+                f"{location}.scripts_to_run_on_update",
+                base_directory,
+            )
             arguments = (
                 description, old_paths, new_path,
                 rua_json_utils.parse_new_name(task["old_collection"], f"{location}.old_collection"),
@@ -75,8 +83,9 @@ def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdat
                         rua_json_utils.parse_new_name(task["old_proxy"], f"{location}.old_proxy")
                         if "old_proxy" in task else ""
                     ),
+                    scripts_to_run_on_update=scripts,
                 )
-            return rua_scene_type.CollectionRelinkTask(*arguments)
+            return rua_scene_type.CollectionRelinkTask(*arguments, scripts_to_run_on_update=scripts)
         return rua_scene_type.LibraryUpdateTask(description, old_paths, new_path)
 
     reload_tasks = [
@@ -105,6 +114,26 @@ def parse_libraries_update_rules(value: object) -> rua_scene_type.LibrariesUpdat
             raise RuntimeError("Proxy migration task parsing returned an invalid task.")
         proxy_tasks.append(task)
     return rua_scene_type.LibrariesUpdateRules(reload_tasks, collection_tasks, proxy_tasks)
+
+
+def _parse_update_scripts(value: object, location: str, base_directory: Optional[str]) -> List[str]:
+    scripts: List[str] = []
+    for index, item in enumerate(rua_json_utils.require_list(value, location)):
+        item_location = f"{location}[{index}]"
+        if not isinstance(item, str) or not item.strip():
+            raise ValueError(f"{item_location}: expected a non-empty script path.")
+        if os.path.splitext(item)[1].lower() != ".py":
+            raise ValueError(f"{item_location}: expected a .py file.")
+        if os.path.isabs(item):
+            script_path = os.path.abspath(item)
+        elif base_directory is not None:
+            script_path = os.path.abspath(os.path.join(base_directory, item))
+        else:
+            raise ValueError(f"{item_location}: relative paths require the scene rules file location.")
+        if not os.path.isfile(script_path):
+            raise ValueError(f"{item_location}: script file not found: {script_path}")
+        scripts.append(script_path)
+    return scripts
 
 
 def _parse_object_multipliers(value: object, location: str) -> Dict[str, float]:
