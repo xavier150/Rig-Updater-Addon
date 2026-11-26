@@ -76,7 +76,3 @@ def plan_proxy_updates(
             task, matches, _proxy_object(matches[0], task), armatures[0].name,
         ))
     return plans
-
-
-def update_proxies_to_collections(tasks: List[rua_scene_type.ProxyUpdateToCollectionTask]) -> int:
-    return collection_relink_utils.apply_collection_relink_plans(plan_proxy_updates(tasks))

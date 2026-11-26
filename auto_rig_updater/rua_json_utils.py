@@ -4,11 +4,10 @@
 
 import json
 from pathlib import Path
-from typing import Callable, Dict, List, Optional, Set, Tuple, TypeVar, cast
+from typing import Callable, Dict, List, Optional, Set, TypeVar, cast
 
 _Operation = TypeVar("_Operation")
 _Removal = TypeVar("_Removal")
-_Task = TypeVar("_Task")
 
 
 def get_config_file_error(filepath: str) -> Optional[str]:
@@ -48,38 +47,6 @@ def parse_new_name(value: object, location: str) -> str:
     if not isinstance(value, str) or not value:
         raise ValueError(f"{location}: expected a non-empty string.")
     return value
-
-
-def parse_update_tasks(
-    value: object,
-    parse_operation: Callable[[object, str], _Operation],
-    removal_type: Callable[[List[str]], _Removal],
-    task_type: Callable[[str, List[_Operation], List[_Removal]], _Task],
-) -> List[_Task]:
-    document = require_dict(value, "JSON", {"update_tasks"})
-    tasks: List[_Task] = []
-    for index, item in enumerate(require_list(document["update_tasks"], "update_tasks")):
-        location = f"update_tasks[{index}]"
-        task = require_dict(item, location, {"description", "replace_operations", "remove_operations"})
-        description, replacements, removals = parse_task_operations(
-            task, location, parse_operation, removal_type,
-        )
-        tasks.append(task_type(description, replacements, removals))
-    return tasks
-
-
-def parse_task_operations(
-    task: Dict[str, object],
-    location: str,
-    parse_operation: Callable[[object, str], _Operation],
-    removal_type: Callable[[List[str]], _Removal],
-) -> Tuple[str, List[_Operation], List[_Removal]]:
-    description = task["description"]
-    if not isinstance(description, str):
-        raise ValueError(f"{location}.description: expected a string.")
-    replacements = parse_replacements(task["replace_operations"], f"{location}.replace_operations", parse_operation)
-    removals = parse_removals(task["remove_operations"], f"{location}.remove_operations", removal_type)
-    return description, replacements, removals
 
 
 def parse_replacements(

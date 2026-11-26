@@ -61,7 +61,3 @@ def plan_collection_relinks(
         else:
             plans.append(collection_relink_utils.CollectionRelinkPlan(task, matches))
     return plans
-
-
-def relink_scene_collections(tasks: List[rua_scene_type.CollectionRelinkTask]) -> int:
-    return collection_relink_utils.apply_collection_relink_plans(plan_collection_relinks(tasks))

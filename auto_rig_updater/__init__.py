@@ -13,7 +13,6 @@ try:
 
     from . import bbpl
     from . import bpl
-    from . import config
     from . import rua_json_utils
     from . import rua_json_file_selector
     from . import rua_scene
@@ -29,8 +28,6 @@ try:
         importlib.reload(bpl)
     if "bbpl" in locals():
         importlib.reload(bbpl)
-    if "config" in locals():
-        importlib.reload(config)
     if "rua_json_utils" in locals():
         importlib.reload(rua_json_utils)
     if "rua_json_file_selector" in locals():
