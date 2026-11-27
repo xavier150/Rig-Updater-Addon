@@ -47,8 +47,40 @@ def library_dependencies(libraries: Set[bpy.types.Library]) -> Set[bpy.types.Lib
         libraries.update(dependencies)
 
 
-def cleanup_relinked_libraries(libraries: Set[bpy.types.Library]) -> None:
-    """Remove only linked data with no surviving users outside the replaced libraries."""
+def cleanup_orphaned_source_overrides(source_libraries: Set[bpy.types.Library]) -> Set[bpy.types.Object]:
+    """Remove unused source overrides and return object references whose names were freed."""
+    users = bpy.data.user_map()
+    unused_overrides = {
+        block for block in users
+        if cast(Optional[bpy.types.Library], block.library) is None and block.override_library is not None
+        and block.override_library.reference is not None
+        and block.override_library.reference.library in source_libraries
+    }
+    while True:
+        removable = {
+            block for block in unused_overrides
+            if not block.use_fake_user and not block.use_extra_user and users[block] <= unused_overrides
+        }
+        if removable == unused_overrides:
+            break
+        unused_overrides = removable
+    released_names = {
+        block.override_library.reference for block in unused_overrides
+        if isinstance(block, bpy.types.Object)
+        and block.override_library is not None
+        and isinstance(block.override_library.reference, bpy.types.Object)
+        and block.name == block.override_library.reference.name
+    }
+    if unused_overrides:
+        bpy.data.batch_remove(ids=list(unused_overrides))
+    return released_names
+
+
+def cleanup_relinked_libraries(
+    libraries: Set[bpy.types.Library], source_libraries: Set[bpy.types.Library],
+) -> None:
+    """Remove orphaned source overrides and unused linked data."""
+    cleanup_orphaned_source_overrides(source_libraries)
     users = bpy.data.user_map()
     unused = {block for block in users if block.library in libraries}
     while True:
@@ -122,6 +154,8 @@ def find_relink_collections(task: rua_scene_type.CollectionRelinkTask) -> List[b
             continue
         library = cast(Optional[bpy.types.Library], reference.library)
         if library is None or path_key(library.filepath, library.parent) not in old_paths:
+            continue
+        if override is not None and collection.users == 0 and not collection.use_extra_user:
             continue
         if override is not None or collection_parents(collection):
             matches.append(collection)

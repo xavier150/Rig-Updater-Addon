@@ -271,6 +271,17 @@ def apply_collection_relink_plans(plans: List[CollectionRelinkPlan]) -> int:
         if library is not None:
             source_libraries.add(library)
     libraries = methods_utils.library_dependencies(source_libraries) if source_libraries else source_libraries
+    released_names = methods_utils.cleanup_orphaned_source_overrides(source_libraries)
+    for plan in plans:
+        for root in plan.collections:
+            for obj in methods_utils.relink_objects(root, plan.proxy):
+                reference = obj.override_library.reference if obj.override_library is not None else None
+                if not isinstance(reference, bpy.types.Object) or reference not in released_names:
+                    continue
+                prefix = reference.name + "."
+                suffix = obj.name[len(prefix):] if obj.name.startswith(prefix) else ""
+                if len(suffix) >= 3 and suffix.isdigit():
+                    obj.name = reference.name
     updated = 0
     for plan in plans:
         scenes: Set[bpy.types.Scene] = set()
@@ -279,5 +290,5 @@ def apply_collection_relink_plans(plans: List[CollectionRelinkPlan]) -> int:
             updated += 1
         object_state_utils.apply_object_multipliers(plan.task, scenes)
     if updated:
-        methods_utils.cleanup_relinked_libraries(libraries)
+        methods_utils.cleanup_relinked_libraries(libraries, source_libraries)
     return updated

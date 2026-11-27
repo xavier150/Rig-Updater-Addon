@@ -120,6 +120,7 @@ Include one or more task arrays in `libraries_update_rules`.
 - Back up first. Relink/proxy tasks require Blender 3.5+; convert instances and legacy proxies to overrides first.
 - Update scripts execute Python code in Blender. Only reference scripts you trust; a missing script or a script without `run(armature)` stops the update.
 - Relinks preserve animation, root transforms and local constraints. Old local drivers are discarded; unsupported complex NLA still blocks the relink.
+- Relinks remove unused overrides of replaced libraries and their unused linked data; overrides with surviving users or fake users are retained. When an orphan occupied its linked object's name, a matching numbered override can recover that name. Other orphaned data is not purged.
 - When a local armature's linked name is absent from the destination, the updater maps it to the single unmatched destination armature. Ambiguous mappings stop the update. The replacement uses the destination rig's drivers and bone constraints.
 - Relative paths require a saved file and the same drive. Update nested libraries in their parent file.
 - `Update Actions` migrates bone/channel names; relinks only restore action/NLA assignments. Do not target the same collection twice; all replacements are preflighted.
