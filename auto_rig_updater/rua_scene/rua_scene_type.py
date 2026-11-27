@@ -24,6 +24,11 @@ class LibraryUpdateTask:
 
 
 @dataclasses.dataclass(frozen=True)
+class ReloadTask(LibraryUpdateTask):
+    path_type: str = "absolute"
+
+
+@dataclasses.dataclass(frozen=True)
 class CollectionRelinkTask(LibraryUpdateTask):
     old_collection: str
     new_collection: str
@@ -40,7 +45,7 @@ class ProxyUpdateToCollectionTask(CollectionRelinkTask):
 
 @dataclasses.dataclass(frozen=True)
 class LibrariesUpdateRules:
-    reload_tasks: List[LibraryUpdateTask]
+    reload_tasks: List[ReloadTask]
     collection_relink_tasks: List[CollectionRelinkTask]
     proxy_update_to_collection_tasks: List[ProxyUpdateToCollectionTask] = dataclasses.field(default_factory=list)
 

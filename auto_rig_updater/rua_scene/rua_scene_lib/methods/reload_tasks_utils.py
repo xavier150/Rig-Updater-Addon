@@ -10,7 +10,7 @@ import bpy
 
 from ... import rua_scene_type
 from ..object_state.object_state_utils import restore_selection
-from .methods_utils import absolute_path, path_key
+from .methods_utils import absolute_path, path_key, relative_library_path_for_filepath
 
 
 def _check_destination_library(
@@ -111,7 +111,7 @@ def _refresh_override_objects(
 
 
 def preflight_reload_tasks(
-    tasks: List[rua_scene_type.LibraryUpdateTask],
+    tasks: List[rua_scene_type.ReloadTask],
     warning_callback: Optional[Callable[[str], None]] = None,
 ) -> None:
     library_paths = [
@@ -124,6 +124,11 @@ def preflight_reload_tasks(
         destination_key = path_key(task.new)
         for index, (library, current_path) in enumerate(library_paths):
             if current_path in old_paths and current_path != destination_key:
+                if (
+                    relative_library_path_for_filepath(library.filepath, task.path_type)
+                    and not bpy.data.filepath
+                ):
+                    raise ValueError("Save the current .blend file before relinking with relative library paths.")
                 missing = _check_destination_library(library, destination)
                 if missing:
                     warning = (
@@ -137,7 +142,7 @@ def preflight_reload_tasks(
 
 
 def reload_scene_libraries(
-    tasks: List[rua_scene_type.LibraryUpdateTask],
+    tasks: List[rua_scene_type.ReloadTask],
     warning_callback: Optional[Callable[[str], None]] = None,
 ) -> int:
     updated = 0
@@ -169,7 +174,8 @@ def reload_scene_libraries(
                 overrides.append((obj.name, reference.name))
             result = bpy.ops.wm.lib_relocate(  # type: ignore[reportUnknownMemberType]
                 library=library.name, directory=os.path.dirname(destination),
-                filename=os.path.basename(destination), relative_path=False,
+                filename=os.path.basename(destination),
+                relative_path=relative_library_path_for_filepath(library.filepath, task.path_type),
             )
             if result != {'FINISHED'}:
                 raise RuntimeError(f"Failed to relocate library '{name}' to '{destination}': {result}.")

@@ -42,6 +42,8 @@ def parse_libraries_update_rules(
                 )
                 if not proxy and "mode" in value:
                     task_keys.add("mode")
+        elif isinstance(value, dict) and "path_type" in value:
+            task_keys.add("path_type")
         task = rua_json_utils.require_dict(value, location, task_keys)
         description = task["description"]
         if not isinstance(description, str):
@@ -86,10 +88,19 @@ def parse_libraries_update_rules(
                     scripts_to_run_on_update=scripts,
                 )
             return rua_scene_type.CollectionRelinkTask(*arguments, scripts_to_run_on_update=scripts)
-        return rua_scene_type.LibraryUpdateTask(description, old_paths, new_path)
+        path_type = task.get("path_type", "absolute")
+        if not isinstance(path_type, str) or path_type not in {"as_before", "relative", "absolute"}:
+            raise ValueError(f"{location}.path_type: expected 'as_before', 'relative' or 'absolute'.")
+        return rua_scene_type.ReloadTask(description, old_paths, new_path, path_type)
+
+    def parse_reload_task(value: object, location: str) -> rua_scene_type.ReloadTask:
+        task = parse_task(value, location, False)
+        if not isinstance(task, rua_scene_type.ReloadTask):
+            raise RuntimeError("Reload task parsing returned an invalid task.")
+        return task
 
     reload_tasks = [
-        parse_task(item, f"libraries_update_rules.reload_tasks[{index}]", False)
+        parse_reload_task(item, f"libraries_update_rules.reload_tasks[{index}]")
         for index, item in enumerate(rua_json_utils.require_list(
             libraries.get("reload_tasks", []), "libraries_update_rules.reload_tasks",
         ))

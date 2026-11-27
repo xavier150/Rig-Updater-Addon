@@ -101,13 +101,21 @@ def cleanup_relinked_libraries(
 
 
 def relative_library_path(root: bpy.types.Collection, task: rua_scene_type.CollectionRelinkTask) -> bool:
-    if task.path_type != "as_before":
-        return task.path_type == "relative"
     reference = root.override_library.reference if root.override_library is not None else root
     if reference is None:
         raise RuntimeError(f"Collection '{root.name}' has no library override reference.")
     library = cast(Optional[bpy.types.Library], reference.library)
-    return library is not None and library.filepath.startswith("//")
+    return library is not None and relative_library_path_for_filepath(library.filepath, task.path_type)
+
+
+def relative_library_path_for_filepath(filepath: str, path_type: str) -> bool:
+    if path_type == "as_before":
+        return filepath.startswith("//")
+    if path_type == "relative":
+        return True
+    if path_type == "absolute":
+        return False
+    raise ValueError(f"Expected path_type 'as_before', 'relative' or 'absolute', got '{path_type}'.")
 
 
 def remove_collection_hierarchy(

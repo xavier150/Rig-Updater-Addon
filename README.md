@@ -112,7 +112,7 @@ Include one or more task arrays in `libraries_update_rules`.
 | `old` | Array of `.blend` paths (required) | Source libraries to update. |
 | `new` | `.blend` path (required) | Destination library. |
 | `old_collection`, `new_collection` | Collection names (required for relink/proxy tasks) | Collections to replace and use. |
-| `path_type` | `as_before`, `relative`, `absolute` (relink/proxy only; default `as_before`) | How to store the destination path. |
+| `path_type` | `as_before`, `relative`, `absolute` (optional; default `absolute` for reloads and `as_before` for relink/proxy tasks) | How to store the destination path. |
 | `object_scale_multipliers` | Object name: positive finite number (relink/proxy only; optional) | Multiply local scale after relinking. |
 | `object_location_multipliers` | Object name: positive finite number (relink/proxy only; optional) | Multiply local location after relinking. |
 | `scripts_to_run_on_update` | Array of `.py` paths (relink/proxy only; optional) | Run trusted Python scripts on each updated local armature after relinking. Paths are relative to the Scene Rules JSON file or absolute. Each script must define `run(armature)`. |
@@ -142,7 +142,8 @@ Example:
       {
         "description": "Reload a library",
         "old": ["OldLib.blend"],
-        "new": "NewLib.blend"
+        "new": "NewLib.blend",
+        "path_type": "relative"
       }
     ],
     "collection_relink_tasks": [
