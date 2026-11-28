@@ -107,9 +107,19 @@ class ProxyCopy_NLATrack:
             nla_track.name = self.name
             nla_track.select = self.select
             for strip in self.strips:
-                if strip.action:
-                    new_strip = nla_track.strips.new(strip.name, int(strip.frame_start), strip.action)
+                action = strip.action
+                temporary_action = None
+                if action is None and strip.type == 'CLIP':
+                    # Blender requires an action to create a clip, even if it is later cleared.
+                    temporary_action = bpy.data.actions.new("NLA temporary action")
+                    action = temporary_action
+                if action is not None:
+                    new_strip = nla_track.strips.new(strip.name, int(strip.frame_start), action)
                     strip.paste_data_on(new_strip)
+                    if temporary_action is not None:
+                        new_strip.action = None
+                        bpy.data.actions.remove(temporary_action)
+                        new_strip.name = strip.name
 
 
 class ProxyCopy_NlaStrip:
