@@ -40,7 +40,7 @@ def validate_object_animation(source: bpy.types.Object) -> None:
         return
     for track in source.animation_data.nla_tracks:
         for strip in track.strips:
-            if strip.type != 'CLIP' or strip.action is None or len(strip.modifiers):
+            if strip.type != 'CLIP' or len(strip.modifiers):
                 raise ValueError(
                     f"Cannot preserve NLA strip '{strip.name}' on '{source.name}' during collection relinking."
                 )
